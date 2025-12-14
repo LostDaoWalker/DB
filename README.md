@@ -35,6 +35,14 @@ npm run register:commands
 npm run start
 ```
 
+## One-command launch (recommended)
+
+```bash
+npm run launch
+```
+
+This does: install deps → check `.env` → register commands → start the bot.
+
 ## Commands
 
 - `/start`: choose your animal (your class)
