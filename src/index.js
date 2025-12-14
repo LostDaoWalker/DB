@@ -68,8 +68,145 @@ try {
   process.exit(1);
 }
 
-// Deduplication map for rapid successive interactions
-const pendingInteractions = new Map();
+// Universal softlock prevention system
+class SoftlockPreventionSystem {
+  constructor() {
+    this.pendingInteractions = new Map();
+    this.failedInteractions = new Map();
+    this.recoveryTimeouts = new Map();
+    this.interactionStates = new Map();
+  }
+
+  // Track interaction state for recovery
+  trackInteraction(interaction) {
+    const key = `${interaction.user.id}:${interaction.commandName || interaction.customId}`;
+    const state = {
+      id: interaction.id,
+      userId: interaction.user.id,
+      type: interaction.type,
+      commandName: interaction.commandName,
+      customId: interaction.customId,
+      timestamp: Date.now(),
+      attempts: 0,
+      lastError: null
+    };
+    this.interactionStates.set(key, state);
+    return state;
+  }
+
+  // Mark interaction as completed successfully
+  completeInteraction(interaction) {
+    const key = `${interaction.user.id}:${interaction.commandName || interaction.customId}`;
+    this.pendingInteractions.delete(key);
+    this.failedInteractions.delete(key);
+    this.interactionStates.delete(key);
+  }
+
+  // Handle failed interaction with recovery
+  failInteraction(interaction, error) {
+    const key = `${interaction.user.id}:${interaction.commandName || interaction.customId}`;
+    const state = this.interactionStates.get(key);
+
+    if (state) {
+      state.attempts++;
+      state.lastError = error.message;
+      state.lastFailure = Date.now();
+
+      // If too many failures, provide recovery guidance
+      if (state.attempts >= 3) {
+        this.scheduleRecovery(interaction.user.id, state);
+      }
+    }
+
+    this.pendingInteractions.delete(key);
+  }
+
+  // Schedule recovery message for repeatedly failing user
+  scheduleRecovery(userId, state) {
+    const recoveryKey = `recovery_${userId}_${state.commandName || state.customId}`;
+
+    if (!this.recoveryTimeouts.has(recoveryKey)) {
+      const timeout = setTimeout(() => {
+        this.sendRecoveryMessage(userId, state);
+        this.recoveryTimeouts.delete(recoveryKey);
+      }, 30000); // Send recovery message after 30 seconds
+
+      this.recoveryTimeouts.set(recoveryKey, timeout);
+    }
+  }
+
+  // Send recovery guidance message
+  async sendRecoveryMessage(userId, state) {
+    try {
+      // This would send a DM to the user with recovery guidance
+      // For now, we'll log it - in production this would use client.users.fetch()
+      logger.info({ userId, state }, 'Sending recovery guidance for repeatedly failing interaction');
+
+      // Clear the failed state
+      const key = `${userId}:${state.commandName || state.customId}`;
+      this.interactionStates.delete(key);
+      this.failedInteractions.delete(key);
+    } catch (err) {
+      logger.error({ err, userId }, 'Failed to send recovery message');
+    }
+  }
+
+  // Check if interaction should be deduplicated
+  shouldDeduplicate(interaction) {
+    const key = `${interaction.user.id}:${interaction.commandName || interaction.customId}`;
+    const existing = this.pendingInteractions.get(key);
+
+    if (existing) {
+      const age = Date.now() - existing.timestamp;
+      if (age < 500) { // Within 500ms, deduplicate
+        return true;
+      }
+    }
+
+    // Track new interaction
+    this.pendingInteractions.set(key, {
+      timestamp: Date.now(),
+      interactionId: interaction.id
+    });
+
+    return false;
+  }
+
+  // Clean up old states periodically
+  cleanup() {
+    const now = Date.now();
+    const maxAge = 10 * 60 * 1000; // 10 minutes
+
+    // Clean up old pending interactions
+    for (const [key, data] of this.pendingInteractions) {
+      if (now - data.timestamp > maxAge) {
+        this.pendingInteractions.delete(key);
+      }
+    }
+
+    // Clean up old interaction states
+    for (const [key, state] of this.interactionStates) {
+      if (now - state.timestamp > maxAge) {
+        this.interactionStates.delete(key);
+      }
+    }
+
+    // Clean up old failed interactions
+    for (const [key, data] of this.failedInteractions) {
+      if (now - data.timestamp > maxAge) {
+        this.failedInteractions.delete(key);
+      }
+    }
+  }
+}
+
+// Global softlock prevention system
+const softlockSystem = new SoftlockPreventionSystem();
+
+// Periodic cleanup
+setInterval(() => {
+  softlockSystem.cleanup();
+}, 5 * 60 * 1000); // Clean up every 5 minutes
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -150,6 +287,45 @@ function sanitizeErrorDetails(err) {
   };
 }
 
+// Helper function to provide recovery guidance for common softlock scenarios
+function getRecoveryGuidance(err, interaction) {
+  const errorMessage = err.message?.toLowerCase() || '';
+  const commandName = interaction.commandName || interaction.customId?.split(':')[0] || 'command';
+
+  // Database connection issues
+  if (errorMessage.includes('database') || errorMessage.includes('sqlite') || errorMessage.includes('connection')) {
+    return '\n\n**🔧 Recovery:** The bot\'s database is temporarily unavailable. Please try again in a few moments. Your data is safe.';
+  }
+
+  // Permission issues
+  if (errorMessage.includes('permission') || errorMessage.includes('forbidden') || errorMessage.includes('missing access')) {
+    return '\n\n**🔒 Recovery:** Check that the bot has proper permissions in this server. Contact a server admin if issues persist.';
+  }
+
+  // Rate limiting
+  if (errorMessage.includes('rate limit') || errorMessage.includes('too many requests') || errorMessage.includes('cooldown')) {
+    return '\n\n**⏱️ Recovery:** You\'re doing that too quickly! Please wait a moment before trying again.';
+  }
+
+  // Timeout/interaction expired
+  if (errorMessage.includes('interaction') && (errorMessage.includes('expired') || errorMessage.includes('timeout'))) {
+    return '\n\n**⏰ Recovery:** This interaction timed out. Please use the command again to restart.';
+  }
+
+  // Network/API issues
+  if (errorMessage.includes('network') || errorMessage.includes('timeout') || errorMessage.includes('fetch')) {
+    return '\n\n**🌐 Recovery:** Network issue detected. Please try again in a few seconds.';
+  }
+
+  // Data corruption or invalid state
+  if (errorMessage.includes('corrupt') || errorMessage.includes('invalid') || errorMessage.includes('not found')) {
+    return '\n\n**🔄 Recovery:** Your game data may need refreshing. Try using `/start` to reinitialize.';
+  }
+
+  // Generic recovery guidance
+  return '\n\n**💡 Recovery:** If this error persists, try using `/start` to refresh your session, or contact support.';
+}
+
 // Helper function to provide detailed, user-friendly error messages
 function getUserFriendlyErrorMessage(err, interaction) {
   const sanitized = sanitizeErrorDetails(err);
@@ -215,62 +391,47 @@ function getUserFriendlyErrorMessage(err, interaction) {
     return `📊 **Profile Error**\nFailed to load profile data.\n\n${details}\n\nTry viewing your profile again.`;
   }
 
-  // Fallback with full error details
-  return `🐺 **Unexpected Error**\nAn unexpected error occurred.\n\n${details}\n\nThe developers have been notified. Please try again.`;
+  // Fallback with full error details and recovery guidance
+  const recoveryGuidance = getRecoveryGuidance(err, interaction);
+  return `🐺 **Unexpected Error**\nAn unexpected error occurred.\n\n${details}${recoveryGuidance}`;
 }
 
 client.on('interactionCreate', async (interaction) => {
+  // Track interaction for softlock prevention
+  const interactionState = softlockSystem.trackInteraction(interaction);
+
   try {
-    // Deduplicate rapid successive interactions from same user
-    const dedupeKey = `${interaction.user.id}:${interaction.commandName || interaction.customId}`;
-    if (pendingInteractions.has(dedupeKey)) {
+    // Universal softlock prevention - check for deduplication
+    if (softlockSystem.shouldDeduplicate(interaction)) {
       return;
     }
-    pendingInteractions.set(dedupeKey, true);
-    setTimeout(() => pendingInteractions.delete(dedupeKey), 500);
 
+    // Handle different interaction types with comprehensive error recovery
     if (interaction.isChatInputCommand()) {
-      const cmd = registry.commands.get(interaction.commandName);
-      if (!cmd) {
-        logger.warn({ commandName: interaction.commandName }, 'Unknown command');
-        return;
-      }
-
-      // Track command usage
-      try {
-        await updatePlayerCommandUsage({
-          userId: interaction.user.id,
-          commandName: interaction.commandName,
-          now: Date.now()
-        });
-      } catch (err) {
-        logger.warn({ err, userId: interaction.user.id, commandName: interaction.commandName }, 'Failed to track command usage');
-      }
-
-      await cmd.execute(interaction);
-      return;
+      await handleCommandInteraction(interaction);
+    } else if (interaction.isStringSelectMenu() || interaction.isButton()) {
+      await handleComponentInteraction(interaction);
     }
 
-    if (interaction.isStringSelectMenu() || interaction.isButton()) {
-      const handler = registry.components.get(interaction.customId);
-      if (!handler) {
-        logger.warn({ customId: interaction.customId }, 'Unknown component');
-        return;
-      }
-      await handler.execute(interaction);
-    }
+    // Mark as successfully completed
+    softlockSystem.completeInteraction(interaction);
+
   } catch (err) {
-    logger.error({ err, type: interaction.type, userId: interaction.user?.id }, 'Interaction error');
+    // Comprehensive error handling with recovery guidance
+    logger.error({ err, type: interaction.type, userId: interaction.user?.id, interactionState }, 'Interaction error');
 
-    // Provide specific, helpful error messages to users
+    // Mark as failed for recovery tracking
+    softlockSystem.failInteraction(interaction, err);
+
+    // Provide specific, helpful error messages with recovery guidance
     const errorMessage = getUserFriendlyErrorMessage(err, interaction);
 
     try {
       if (interaction.isRepliable()) {
         if (interaction.deferred || interaction.replied) {
-          await interaction.followUp({ content: errorMessage });
+          await interaction.followUp({ content: errorMessage, ephemeral: false });
         } else {
-          await interaction.reply({ content: errorMessage });
+          await interaction.reply({ content: errorMessage, ephemeral: false });
         }
       }
     } catch (replyErr) {
@@ -278,6 +439,132 @@ client.on('interactionCreate', async (interaction) => {
     }
   }
 });
+
+// Handle command interactions with comprehensive error recovery
+async function handleCommandInteraction(interaction) {
+  const cmd = registry.commands.get(interaction.commandName);
+  if (!cmd) {
+    logger.warn({ commandName: interaction.commandName }, 'Unknown command');
+    await interaction.reply({
+      content: `❌ **Unknown Command**\nThe command \`${interaction.commandName}\` is not available.\n\n**💡 Try:** Use \`/start\` to access the game, or \`/help\` for available commands.`,
+      ephemeral: false
+    });
+    return;
+  }
+
+  // Execute with timeout protection
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Command execution timed out')), 30000); // 30 second timeout
+  });
+
+  try {
+    await Promise.race([
+      executeCommandSafely(interaction, cmd),
+      timeoutPromise
+    ]);
+  } catch (err) {
+    if (err.message === 'Command execution timed out') {
+      await interaction.followUp({
+        content: `⏰ **Command Timeout**\nThe command took too long to execute.\n\n**💡 Recovery:** Try the command again. If this persists, the bot may be experiencing high load.`,
+        ephemeral: false
+      });
+    }
+    throw err;
+  }
+}
+
+// Safe command execution with retry logic
+async function executeCommandSafely(interaction, cmd, retryCount = 0) {
+  const maxRetries = 2;
+
+  try {
+    // Track command usage (non-blocking)
+    updatePlayerCommandUsage({
+      userId: interaction.user.id,
+      commandName: interaction.commandName,
+      now: Date.now()
+    }).catch(err => {
+      logger.warn({ err, userId: interaction.user.id, commandName: interaction.commandName }, 'Failed to track command usage');
+    });
+
+    await cmd.execute(interaction);
+  } catch (err) {
+    // Retry logic for transient failures
+    if (retryCount < maxRetries && isRetryableError(err)) {
+      logger.warn({ err, retryCount, commandName: interaction.commandName }, 'Retrying command execution');
+      await sleep(1000 * (retryCount + 1)); // Exponential backoff
+      return executeCommandSafely(interaction, cmd, retryCount + 1);
+    }
+
+    throw err;
+  }
+}
+
+// Handle component interactions with timeout protection
+async function handleComponentInteraction(interaction) {
+  const handler = registry.components.get(interaction.customId);
+  if (!handler) {
+    logger.warn({ customId: interaction.customId }, 'Unknown component');
+    await safeInteractionUpdate(interaction, {
+      content: `❌ **Unknown Interaction**\nThis interaction is no longer available.\n\n**💡 Recovery:** Use \`/start\` to restart your session.`,
+      components: []
+    });
+    return;
+  }
+
+  // Execute with timeout protection
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Component execution timed out')), 15000); // 15 second timeout
+  });
+
+  try {
+    await Promise.race([
+      handler.execute(interaction),
+      timeoutPromise
+    ]);
+  } catch (err) {
+    if (err.message === 'Component execution timed out') {
+      await safeInteractionUpdate(interaction, {
+        content: `⏰ **Interaction Timeout**\nThis interaction took too long to process.\n\n**💡 Recovery:** Use the command again to restart.`,
+        components: []
+      });
+    } else if (err.message?.includes('interaction') && err.message?.includes('expired')) {
+      // Interaction expired - this is expected, don't throw
+      return;
+    }
+    throw err;
+  }
+}
+
+// Safe interaction update that handles expired interactions
+async function safeInteractionUpdate(interaction, data) {
+  try {
+    if (interaction.isRepliable()) {
+      await interaction.update(data);
+    }
+  } catch (err) {
+    if (err.message?.includes('interaction') && err.message?.includes('expired')) {
+      // Expected - interaction timed out
+      return;
+    }
+    throw err;
+  }
+}
+
+// Check if an error is retryable
+function isRetryableError(err) {
+  const message = err.message?.toLowerCase() || '';
+  return message.includes('database') ||
+         message.includes('network') ||
+         message.includes('timeout') ||
+         message.includes('connection') ||
+         message.includes('temporary');
+}
+
+// Utility sleep function
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 // Attempt to login with error handling
 try {
