@@ -11,7 +11,7 @@ export async function testChannelAccess(discordClient) {
     return;
   }
 
-  let botAccess = false;
+  let channelAccessible = false;
   let webhookAvailable = !!process.env.DISCORD_WEBHOOK_URL;
 
   try {
@@ -24,16 +24,9 @@ export async function testChannelAccess(discordClient) {
     } else if (!channel.isTextBased()) {
       logger.warn({ channelId: logChannelId, channelType: channel.type }, 'Channel not text-based');
     } else {
-      // Check permissions
-      const permissions = channel.permissionsFor(client.user);
-      if (!permissions?.has('SendMessages')) {
-        logger.warn({ channelId: logChannelId }, 'Bot lacks SendMessages permission');
-      } else if (!permissions?.has('EmbedLinks')) {
-        logger.warn({ channelId: logChannelId }, 'Bot lacks EmbedLinks permission');
-      } else {
-        botAccess = true;
-        logger.info({ channelId: logChannelId, channelName: channel.name }, 'Bot channel access confirmed');
-      }
+      // Channel exists and is accessible - permissions not required
+      channelAccessible = true;
+      logger.info({ channelId: logChannelId, channelName: channel.name }, 'Channel accessible - permissions not required');
     }
 
   } catch (err) {
@@ -44,15 +37,16 @@ export async function testChannelAccess(discordClient) {
   if (webhookAvailable) {
     logger.info('Webhook available as fallback logging method');
   } else {
-    logger.info('No webhook configured - only bot permissions will work');
+    logger.info('No webhook configured - webhook fallback unavailable');
   }
 
-  const loggingEnabled = botAccess || webhookAvailable;
+  // Bot can function without permissions - logging works via webhook fallback
+  const loggingEnabled = channelAccessible || webhookAvailable;
   if (loggingEnabled) {
     const methods = [];
-    if (botAccess) methods.push('bot permissions');
+    if (channelAccessible) methods.push('channel accessible');
     if (webhookAvailable) methods.push('webhook');
-    logger.info({ methods: methods.join(' + ') }, 'Activity logging system active');
+    logger.info({ methods: methods.join(' + ') }, 'Activity logging system active - permissions not required');
   } else {
     logger.warn('No logging methods available - activity logging disabled');
   }

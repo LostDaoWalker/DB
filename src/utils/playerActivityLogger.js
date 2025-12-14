@@ -78,43 +78,16 @@ async function logActivity({ title, description, color, fields = [] }) {
     embed.addFields(fields);
   }
 
-  // Try bot permissions first, fallback to webhook
-  try {
-    logger.debug({ channelId: logChannelId }, 'Attempting bot-based logging');
-
-    const channel = await client.channels.fetch(logChannelId);
-    if (!channel) {
-      throw new Error('Channel not found');
+  // Try webhook logging (permissions not required)
+  if (webhookClient) {
+    try {
+      await webhookClient.send({ embeds: [embed] });
+      logger.info({ title, description }, 'Player activity logged via webhook');
+      return;
+    } catch (webhookErr) {
+      logger.warn({ err: webhookErr }, 'Webhook logging failed');
     }
-
-    if (!channel.isTextBased()) {
-      throw new Error('Channel not text-based');
-    }
-
-    // Check permissions
-    const permissions = channel.permissionsFor(client.user);
-    if (!permissions?.has('SendMessages') || !permissions?.has('EmbedLinks')) {
-      throw new Error('Insufficient permissions');
-    }
-
-    const message = await channel.send({ embeds: [embed] });
-    logger.info({ title, description, messageId: message.id }, 'Player activity logged via bot');
-    return;
-
-  } catch (err) {
-    logger.debug({ err: err.message }, 'Bot logging failed, trying webhook fallback');
-
-    // Fallback to webhook if available
-    if (webhookClient) {
-      try {
-        await webhookClient.send({ embeds: [embed] });
-        logger.info({ title, description }, 'Player activity logged via webhook');
-        return;
-      } catch (webhookErr) {
-        logger.warn({ err: webhookErr }, 'Webhook logging also failed');
-      }
-    }
-
-    logger.warn({ title }, 'All logging methods failed - activity not logged');
   }
+
+  logger.warn({ title }, 'No webhook available - activity not logged');
 }
