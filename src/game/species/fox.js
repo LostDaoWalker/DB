@@ -120,5 +120,27 @@ export const foxSpecies = {
         fleeSuccess: points * 0.01
       })
     }
+  },
+
+  // Cross-species evolution forms
+  legendaryForm: {
+    name: 'Trickster Spirit',
+    epCost: 300,
+    description: 'Legendary fox spirit, master of deception and illusion',
+    bonuses: { spd: 0.35, atk: 0.25, def: 0.15, critChance: 0.3 }
+  },
+
+  ancientForm: {
+    name: 'Primordial Trickster',
+    epCost: 800,
+    description: 'Ancient fox from the dawn of time, weaver of fate',
+    bonuses: { spd: 0.45, atk: 0.35, def: 0.25, critChance: 0.35, fateWeaver: 0.6 }
+  },
+
+  mythicalForm: {
+    name: 'Nine-Tails Deity',
+    epCost: 2500,
+    description: 'Divine nine-tailed fox, god of cunning and destiny',
+    bonuses: { spd: 0.6, atk: 0.5, def: 0.4, critChance: 0.5, fateWeaver: 0.8, multiStrike: 0.8 }
   }
 };
