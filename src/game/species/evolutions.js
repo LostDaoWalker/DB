@@ -15,58 +15,63 @@ export const EVOLUTION_RARITY = {
   SUPERNATURAL: 'supernatural'
 };
 
-export const PHASE_BONUSES = {
-  [EVOLUTION_PHASES.BABY]: { multiplier: 0.6 },
-  [EVOLUTION_PHASES.YOUNG]: { multiplier: 0.8 },
-  [EVOLUTION_PHASES.ADULT]: { multiplier: 1.0 },
-  [EVOLUTION_PHASES.ELDER]: { multiplier: 1.3 }
+// EP cost requirements - dramatic exponential scaling
+export const EP_COST_BASE = {
+  [EVOLUTION_RARITY.COMMON]: 100,
+  [EVOLUTION_RARITY.UNCOMMON]: 300,
+  [EVOLUTION_RARITY.RARE]: 800,
+  [EVOLUTION_RARITY.EPIC]: 2000,
+  [EVOLUTION_RARITY.LEGENDARY]: 8000,
+  [EVOLUTION_RARITY.ANCIENT]: 35000,
+  [EVOLUTION_RARITY.SUPERNATURAL]: 150000
 };
 
-export const RARITY_MULTIPLIERS = {
-  [EVOLUTION_RARITY.COMMON]: 1.0,
-  [EVOLUTION_RARITY.UNCOMMON]: 1.2,
-  [EVOLUTION_RARITY.RARE]: 1.4,
-  [EVOLUTION_RARITY.EPIC]: 1.7,
-  [EVOLUTION_RARITY.LEGENDARY]: 2.0,
-  [EVOLUTION_RARITY.ANCIENT]: 2.5,
-  [EVOLUTION_RARITY.SUPERNATURAL]: 3.0
-};
-
-export const EVOLUTION_STAGE_REQUIREMENTS = {
+// Extreme legendary/ancient/supernatural requirements
+export const EXTREME_REQUIREMENTS = {
   [EVOLUTION_RARITY.LEGENDARY]: {
-    minLevel: 45,
-    minStats: { atk: 50, def: 40, spd: 45 },
-    minBattlesWon: 500,
-    epThreshold: 4000,
-    rareItems: 3
+    minLevel: 50,
+    minStats: { atk: 80, def: 60, spd: 75 },
+    minBattlesWon: 1000,
+    minPlaytimeHours: 100,
+    rarityMult: 8,
+    totalEpRequired: 64000
   },
   [EVOLUTION_RARITY.ANCIENT]: {
-    minLevel: 65,
-    minStats: { atk: 75, def: 65, spd: 70 },
-    minBattlesWon: 1500,
-    epThreshold: 7500,
-    rareItems: 5,
-    timePlayed: 500
+    minLevel: 85,
+    minStats: { atk: 150, def: 120, spd: 140 },
+    minBattlesWon: 5000,
+    minPlaytimeHours: 500,
+    rarityMult: 35,
+    totalEpRequired: 1225000,
+    specialItems: 5
   },
   [EVOLUTION_RARITY.SUPERNATURAL]: {
-    minLevel: 100,
-    minStats: { atk: 150, def: 120, spd: 140 },
-    minBattlesWon: 3000,
-    epThreshold: 15000,
-    rareItems: 10,
-    timePlayed: 1000,
-    specialItems: ['essence_of_chaos', 'void_crystal', 'eternal_flame']
+    minLevel: 120,
+    minStats: { atk: 250, def: 200, spd: 220 },
+    minBattlesWon: 15000,
+    minPlaytimeHours: 1500,
+    rarityMult: 150,
+    totalEpRequired: 22500000,
+    specialItems: 15,
+    requiredItems: ['essence_of_chaos', 'void_crystal', 'eternal_flame', 'primordial_stone']
   }
 };
 
 export function createEvolution(stageNum, name, phase, rarity = EVOLUTION_RARITY.COMMON) {
+  const baseEp = EP_COST_BASE[rarity] || 0;
+  
   return {
     stage: stageNum,
     name,
     phase,
     rarity,
+    epCost: baseEp,
     bonuses: {},
     abilities: [],
-    requirements: EVOLUTION_STAGE_REQUIREMENTS[rarity] || {}
+    requirements: EXTREME_REQUIREMENTS[rarity] || {}
   };
+}
+
+export function calculateTotalEpForRarity(rarity) {
+  return EXTREME_REQUIREMENTS[rarity]?.totalEpRequired || 0;
 }
