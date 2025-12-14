@@ -1,3 +1,5 @@
+import { EVOLUTION_PHASES, EVOLUTION_RARITY, createEvolutionStage } from './evolutions.js';
+
 export const rabbitSpecies = {
   key: 'rabbit',
   name: 'Rabbit',
@@ -6,86 +8,113 @@ export const rabbitSpecies = {
   type: 'nimble',
   diet: 'herbivore',
 
-  // 8-stage evolution tree with growth phases for each evolution
+  // 9 evolution stages with 4 growth phases each (baby, young, adult, elder)
   evolutions: {
     1: {
-      name: 'Rabbit Kit',
-      growth: 'baby',
-      epCost: 0,
-      description: 'Playful and curious, learning to hop and hide',
+      ...createEvolutionStage(1, 'Rabbit Kit', 'Playful and curious, learning to hop and hide', EVOLUTION_PHASES.BABY),
       bonuses: {},
       abilities: ['dodge', 'burrow']
     },
     2: {
-      name: 'Young Rabbit',
-      growth: 'young',
-      epCost: 80,
-      description: 'Growing more agile, developing evasion skills',
+      ...createEvolutionStage(2, 'Young Rabbit', 'Growing more agile, developing evasion skills', EVOLUTION_PHASES.YOUNG),
       bonuses: { spd: 0.12, def: 0.03 },
-      abilities: ['dodge', 'burrow', 'hop'],
-      branches: {
-        nimble: {
-          name: 'Swift Rabbit',
-          description: 'Masters speed and evasion, becomes untouchable',
-          bonuses: { spd: 0.18, evasion: 0.25 },
-          abilities: ['dodge', 'lightning_hop', 'blur']
-        },
-        tough: {
-          name: 'Burrowing Rabbit',
-          description: 'Develops incredible digging abilities and defenses',
-          bonuses: { def: 0.15, burrowDefense: 0.3 },
-          abilities: ['dodge', 'deep_burrow', 'earth_shield']
-        }
-      }
+      abilities: ['dodge', 'burrow', 'hop']
     },
     3: {
-      name: 'Adult Rabbit',
-      growth: 'adult',
-      epCost: 250,
-      description: 'Prime of life, skilled at evasion and survival',
+      ...createEvolutionStage(3, 'Adult Rabbit', 'Prime of life, skilled at evasion and survival', EVOLUTION_PHASES.ADULT),
       bonuses: { spd: 0.15, def: 0.05 },
       abilities: ['dodge', 'burrow', 'hop', 'evade']
     },
     4: {
-      name: 'Elder Rabbit',
-      growth: 'elder',
-      epCost: 500,
-      description: 'Wise and experienced, master of the warren',
+      ...createEvolutionStage(4, 'Elder Rabbit', 'Wise and experienced, master of the warren', EVOLUTION_PHASES.ELDER),
       bonuses: { spd: 0.18, def: 0.08, evasion: 0.1 },
       abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master']
     },
     5: {
-      name: 'Rabbit Spirit',
-      growth: 'legendary',
-      epCost: 1000,
-      description: 'Mythical spirit of fertility and speed',
-      bonuses: { spd: 0.25, def: 0.12, evasion: 0.15, luck: 0.2 },
-      abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master', 'spirit_speed']
+      ...createEvolutionStage(5, 'Shadow Rabbit', 'Shadow-touched rabbit of dark places', EVOLUTION_PHASES.BABY, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { spd: 0.2, evasion: 0.05 },
+      abilities: ['dodge', 'burrow', 'hop', 'shadow_cloak']
     },
     6: {
-      name: 'Moon Rabbit',
-      growth: 'mythical',
-      epCost: 2000,
-      description: 'Celestial rabbit from lunar legends, weaver of dreams',
-      bonuses: { spd: 0.32, def: 0.18, evasion: 0.22, luck: 0.3, dreamWeaver: 0.4 },
-      abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master', 'spirit_speed', 'dream_hop', 'lunar_blessing']
+      ...createEvolutionStage(6, 'Shadow Rabbit', 'Master of shadows and darkness', EVOLUTION_PHASES.YOUNG, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { spd: 0.28, def: 0.04, evasion: 0.12 },
+      abilities: ['dodge', 'burrow', 'hop', 'shadow_cloak', 'shadow_step']
     },
     7: {
-      name: 'Void Hopper',
-      growth: 'divine',
-      epCost: 4000,
-      description: 'Rabbit that hops between dimensions, master of space and time',
-      bonuses: { spd: 0.4, def: 0.25, evasion: 0.3, luck: 0.4, dreamWeaver: 0.6, dimensionalShift: 0.7 },
-      abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master', 'spirit_speed', 'dream_hop', 'lunar_blessing', 'void_jump', 'time_hop']
+      ...createEvolutionStage(7, 'Shadow Rabbit', 'One with the void', EVOLUTION_PHASES.ADULT, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { spd: 0.35, def: 0.06, evasion: 0.18, luck: 0.08 },
+      abilities: ['dodge', 'burrow', 'hop', 'shadow_cloak', 'shadow_step', 'void_phase']
     },
     8: {
-      name: 'Primordial Leaper',
-      growth: 'primordial',
-      epCost: 8000,
-      description: 'The original rabbit, ancestor of all lagomorphs, bounder through eternity',
-      bonuses: { spd: 0.55, def: 0.35, evasion: 0.4, luck: 0.5, dreamWeaver: 0.8, dimensionalShift: 0.9, eternalBounce: 1.0 },
-      abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master', 'spirit_speed', 'dream_hop', 'lunar_blessing', 'void_jump', 'time_hop', 'primordial_leap', 'eternal_warren', 'reality_bound']
+      ...createEvolutionStage(8, 'Shadow Rabbit', 'Ancient darkness given form', EVOLUTION_PHASES.ELDER, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { spd: 0.42, def: 0.08, evasion: 0.25, luck: 0.12, voidshift: 0.4 },
+      abilities: ['dodge', 'burrow', 'hop', 'shadow_cloak', 'shadow_step', 'void_phase', 'eternal_darkness']
+    },
+    9: {
+      ...createEvolutionStage(9, 'Void Rabbit', 'Primordial rabbit transcending time and space', EVOLUTION_PHASES.ELDER, EVOLUTION_RARITY.SUPERNATURAL),
+      bonuses: { spd: 0.65, def: 0.15, evasion: 0.4, luck: 0.25, voidshift: 0.7, timeless: 1.0 },
+      abilities: ['dodge', 'burrow', 'hop', 'shadow_cloak', 'shadow_step', 'void_phase', 'eternal_darkness', 'reality_slip']
     }
+  },
+
+  // Legendary branch (high requirements)
+  legendaryForm: {
+    number: 10,
+    name: 'Celestial Rabbit',
+    description: 'Divine rabbit of the stars, embodiment of fortune and speed',
+    growth: EVOLUTION_PHASES.ELDER,
+    rarity: EVOLUTION_RARITY.LEGENDARY,
+    epCost: 2400,
+    requirements: {
+      minLevel: 45,
+      minStats: { atk: 50, def: 40, spd: 45 },
+      minBattlesWon: 500,
+      epThreshold: 4000,
+      rareItems: 3
+    },
+    bonuses: { spd: 0.5, def: 0.12, evasion: 0.35, luck: 0.3, celestialBlessing: 0.5 },
+    abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master', 'stellar_bound', 'lucky_bounce', 'cosmic_shift']
+  },
+
+  // Ancient branch (much higher requirements)
+  ancientForm: {
+    number: 11,
+    name: 'Primordial Hare',
+    description: 'Ancient rabbit from the first dawn, master of primal momentum',
+    growth: EVOLUTION_PHASES.ELDER,
+    rarity: EVOLUTION_RARITY.ANCIENT,
+    epCost: 3600,
+    requirements: {
+      minLevel: 65,
+      minStats: { atk: 75, def: 65, spd: 70 },
+      minBattlesWon: 1500,
+      epThreshold: 7500,
+      rareItems: 5,
+      timePlayed: 500
+    },
+    bonuses: { spd: 0.7, def: 0.2, evasion: 0.45, luck: 0.4, primordialForce: 0.8, ancestralMemory: 0.6 },
+    abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master', 'primal_dash', 'ancient_instinct', 'genesis_hop', 'ancestral_echo']
+  },
+
+  // Supernatural branch (extremely high requirements)
+  supernaturalForm: {
+    number: 12,
+    name: 'Entity of Eternity',
+    description: 'Incomprehensible being that exists outside reality, pure essence of speed incarnate',
+    growth: EVOLUTION_PHASES.ELDER,
+    rarity: EVOLUTION_RARITY.SUPERNATURAL,
+    epCost: 6000,
+    requirements: {
+      minLevel: 100,
+      minStats: { atk: 150, def: 120, spd: 140 },
+      minBattlesWon: 3000,
+      epThreshold: 15000,
+      rareItems: 10,
+      timePlayed: 1000,
+      specialItems: ['essence_of_chaos', 'void_crystal', 'eternal_flame']
+    },
+    bonuses: { spd: 1.2, def: 0.4, evasion: 0.7, luck: 0.6, supernaturalForce: 2.0, realityBend: 1.5, infiniteBounce: 1.0 },
+    abilities: ['dodge', 'burrow', 'hop', 'evade', 'warren_master', 'chaos_leap', 'void_phase', 'reality_warp', 'infinity_bound', 'temporal_shift']
   },
 
   // EP-based stat upgrades
@@ -120,27 +149,5 @@ export const rabbitSpecies = {
         stamina: points * 0.01
       })
     }
-  },
-
-  // Cross-species evolution forms
-  legendaryForm: {
-    name: 'Fleet Spirit',
-    epCost: 280,
-    description: 'Legendary rabbit spirit, embodiment of speed and evasion',
-    bonuses: { spd: 0.4, def: 0.1, evasion: 0.35, luck: 0.25 }
-  },
-
-  ancientForm: {
-    name: 'Dawn Hopper',
-    epCost: 650,
-    description: 'Ancient rabbit from the first light, master of momentum',
-    bonuses: { spd: 0.5, def: 0.15, evasion: 0.4, luck: 0.35, momentum: 0.6 }
-  },
-
-  mythicalForm: {
-    name: 'Chinchilla Deity',
-    epCost: 2200,
-    description: 'Divine rabbit of abundance, bringer of fortune and fertility',
-    bonuses: { spd: 0.65, def: 0.25, evasion: 0.5, luck: 0.6, momentum: 0.8, abundance: 0.9 }
   }
 };

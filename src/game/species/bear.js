@@ -1,146 +1,149 @@
+import { EVOLUTION_PHASES, EVOLUTION_RARITY, createEvolutionStage } from './evolutions.js';
+
 export const bearSpecies = {
   key: 'bear',
   name: 'Bear',
   baseStats: { hp: 32, atk: 7, def: 7, spd: 4 },
   growthStats: { hp: 7, atk: 2, def: 2, spd: 1 },
-  type: 'sturdy',
+  type: 'tank',
   diet: 'omnivore',
 
-  // 8-stage evolution tree with growth phases for each evolution
+  // 9 evolution stages
   evolutions: {
     1: {
-      name: 'Bear Cub',
-      growth: 'baby',
-      epCost: 0,
-      description: 'Playful and curious, learning to growl and wrestle',
+      ...createEvolutionStage(1, 'Bear Cub', 'Young and playful, learning to be strong', EVOLUTION_PHASES.BABY),
       bonuses: {},
-      abilities: ['growl', 'wrestle']
+      abilities: ['maul', 'growl', 'bash']
     },
     2: {
-      name: 'Young Bear',
-      growth: 'young',
-      epCost: 120,
-      description: 'Growing stronger, developing defensive instincts',
-      bonuses: { hp: 0.08, def: 0.05 },
-      abilities: ['growl', 'wrestle', 'guard'],
-      branches: {
-        sturdy: {
-          name: 'Guardian Bear',
-          description: 'Becomes the ultimate protector, tanking damage for others',
-          bonuses: { hp: 0.15, def: 0.12, guardBonus: 0.3 },
-          abilities: ['growl', 'shield_ally', 'last_stand']
-        },
-        fierce: {
-          name: 'Berserker Bear',
-          description: 'Channels primal rage, becoming more powerful as damaged',
-          bonuses: { atk: 0.18, rageBonus: 0.25 },
-          abilities: ['growl', 'berserk', 'reckless_charge']
-        }
-      }
+      ...createEvolutionStage(2, 'Young Bear', 'Growing stronger, developing muscle', EVOLUTION_PHASES.YOUNG),
+      bonuses: { atk: 0.1, def: 0.08, hp: 0.05 },
+      abilities: ['maul', 'growl', 'bash', 'charge']
     },
     3: {
-      name: 'Adult Bear',
-      growth: 'adult',
-      epCost: 350,
-      description: 'Prime of life, master of strength and defense',
-      bonuses: { hp: 0.12, def: 0.08 },
-      abilities: ['growl', 'wrestle', 'guard', 'roar']
+      ...createEvolutionStage(3, 'Adult Bear', 'Full strength and dominance', EVOLUTION_PHASES.ADULT),
+      bonuses: { atk: 0.15, def: 0.12, hp: 0.1 },
+      abilities: ['maul', 'growl', 'bash', 'charge', 'slam']
     },
     4: {
-      name: 'Elder Bear',
-      growth: 'elder',
-      epCost: 700,
-      description: 'Wise and powerful, guardian of the wild',
-      bonuses: { hp: 0.18, def: 0.12, atk: 0.08 },
-      abilities: ['growl', 'wrestle', 'guard', 'roar', 'wise_guardian']
+      ...createEvolutionStage(4, 'Elder Bear', 'Ancient guardian of the forest', EVOLUTION_PHASES.ELDER),
+      bonuses: { atk: 0.2, def: 0.15, hp: 0.15, damageReduction: 0.1 },
+      abilities: ['maul', 'growl', 'bash', 'charge', 'slam', 'earth_shake']
     },
     5: {
-      name: 'Bear Spirit',
-      growth: 'legendary',
-      epCost: 1400,
-      description: 'Mythical spirit of strength and protection',
-      bonuses: { hp: 0.25, def: 0.18, atk: 0.12, regeneration: 0.15 },
-      abilities: ['growl', 'wrestle', 'guard', 'roar', 'wise_guardian', 'spirit_strength']
+      ...createEvolutionStage(5, 'Stone Bear', 'Bear hardened like mountain rock', EVOLUTION_PHASES.BABY, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { def: 0.12, hp: 0.08 },
+      abilities: ['maul', 'growl', 'bash', 'stone_skin']
     },
     6: {
-      name: 'Ursine Behemoth',
-      growth: 'mythical',
-      epCost: 2800,
-      description: 'Massive bear of legend, embodiment of raw power',
-      bonuses: { hp: 0.35, def: 0.25, atk: 0.2, regeneration: 0.25, behemothForce: 0.4 },
-      abilities: ['growl', 'wrestle', 'guard', 'roar', 'wise_guardian', 'spirit_strength', 'earthquake_stomp', 'titanic_roar']
+      ...createEvolutionStage(6, 'Stone Bear', 'Living mountain of stone and muscle', EVOLUTION_PHASES.YOUNG, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { def: 0.2, hp: 0.15, atk: 0.08 },
+      abilities: ['maul', 'growl', 'bash', 'stone_skin', 'granite_form', 'boulder_throw']
     },
     7: {
-      name: 'Celestial Bear',
-      growth: 'divine',
-      epCost: 5500,
-      description: 'Bear blessed by the stars, channeler of cosmic energy',
-      bonuses: { hp: 0.45, def: 0.32, atk: 0.28, regeneration: 0.35, behemothForce: 0.6, stellarPower: 0.7 },
-      abilities: ['growl', 'wrestle', 'guard', 'roar', 'wise_guardian', 'spirit_strength', 'earthquake_stomp', 'titanic_roar', 'cosmic_guard', 'stellar_fury']
+      ...createEvolutionStage(7, 'Stone Bear', 'Fortress of stone, immovable', EVOLUTION_PHASES.ADULT, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { def: 0.28, hp: 0.25, atk: 0.12, damageReduction: 0.15 },
+      abilities: ['maul', 'growl', 'bash', 'stone_skin', 'granite_form', 'boulder_throw', 'mountain_stand']
     },
     8: {
-      name: 'Primordial Titan',
-      growth: 'primordial',
-      epCost: 11000,
-      description: 'The first bear, progenitor of all ursines, master of creation and destruction',
-      bonuses: { hp: 0.6, def: 0.45, atk: 0.4, regeneration: 0.5, behemothForce: 0.8, stellarPower: 0.9, primordialMight: 1.0 },
-      abilities: ['growl', 'wrestle', 'guard', 'roar', 'wise_guardian', 'spirit_strength', 'earthquake_stomp', 'titanic_roar', 'cosmic_guard', 'stellar_fury', 'primordial_crush', 'eternal_guard', 'titanic_creation']
+      ...createEvolutionStage(8, 'Stone Bear', 'Ancient mountain given life', EVOLUTION_PHASES.ELDER, EVOLUTION_RARITY.UNCOMMON),
+      bonuses: { def: 0.38, hp: 0.35, atk: 0.16, damageReduction: 0.22, stability: 0.4 },
+      abilities: ['maul', 'growl', 'bash', 'stone_skin', 'granite_form', 'boulder_throw', 'mountain_stand', 'continental_shift']
+    },
+    9: {
+      ...createEvolutionStage(9, 'Void Bear', 'Primordial being transcending reality', EVOLUTION_PHASES.ELDER, EVOLUTION_RARITY.SUPERNATURAL),
+      bonuses: { def: 0.58, hp: 0.55, atk: 0.28, damageReduction: 0.4, infiniteStone: 0.8, geologicMastery: 1.0 },
+      abilities: ['maul', 'growl', 'bash', 'stone_skin', 'granite_form', 'boulder_throw', 'mountain_stand', 'continental_shift', 'world_quake', 'stone_eternity']
     }
   },
 
-  // EP-based stat upgrades
-  statUpgrades: {
-    fortitude: {
-      name: 'Fortitude',
-      description: 'Increases health and defensive capabilities',
-      costPerPoint: 3,
-      maxPoints: 50,
-      effect: (points) => ({
-        hp: points * 0.15,
-        def: points * 0.08
-      })
-    },
-    might: {
-      name: 'Might',
-      description: 'Boosts attack power and physical strength',
-      costPerPoint: 2,
-      maxPoints: 45,
-      effect: (points) => ({
-        atk: points * 0.1,
-        strength: points * 0.012
-      })
-    },
-    regeneration: {
-      name: 'Regeneration',
-      description: 'Heals over time and resists status effects',
-      costPerPoint: 4,
-      maxPoints: 35,
-      effect: (points) => ({
-        regenRate: points * 0.005,
-        statusResist: points * 0.003
-      })
-    }
-  },
-
-  // Cross-species evolution forms
   legendaryForm: {
-    name: 'Ursa Major Spirit',
-    epCost: 320,
-    description: 'Legendary bear spirit, constellation made flesh',
-    bonuses: { hp: 0.35, def: 0.25, atk: 0.15, regeneration: 0.2 }
+    number: 10,
+    name: 'Divine Guardian',
+    description: 'Holy bear of protection and strength, blessed guardian',
+    growth: EVOLUTION_PHASES.ELDER,
+    rarity: EVOLUTION_RARITY.LEGENDARY,
+    epCost: 2400,
+    requirements: {
+      minLevel: 45,
+      minStats: { atk: 40, def: 60, spd: 25 },
+      minBattlesWon: 500,
+      epThreshold: 4000,
+      rareItems: 3
+    },
+    bonuses: { atk: 0.25, def: 0.35, hp: 0.2, holyAura: 0.5 },
+    abilities: ['maul', 'growl', 'bash', 'charge', 'slam', 'earth_shake', 'divine_protection', 'sacred_roar']
   },
 
   ancientForm: {
-    name: 'Cave Bear Ancient',
-    epCost: 750,
-    description: 'Ancient bear from prehistoric caves, master of primal strength',
-    bonuses: { hp: 0.45, def: 0.35, atk: 0.25, regeneration: 0.3, primalPower: 0.6 }
+    number: 11,
+    name: 'Primordial Guardian',
+    description: 'Ancient guardian from the age of creation, keeper of balance',
+    growth: EVOLUTION_PHASES.ELDER,
+    rarity: EVOLUTION_RARITY.ANCIENT,
+    epCost: 3600,
+    requirements: {
+      minLevel: 65,
+      minStats: { atk: 55, def: 85, spd: 40 },
+      minBattlesWon: 1500,
+      epThreshold: 7500,
+      rareItems: 5,
+      timePlayed: 500
+    },
+    bonuses: { atk: 0.35, def: 0.52, hp: 0.35, primalForce: 0.8, ancientMemory: 0.7 },
+    abilities: ['maul', 'growl', 'bash', 'charge', 'slam', 'earth_shake', 'primal_rage', 'ancient_blessing', 'genesis_roar']
   },
 
-  mythicalForm: {
-    name: 'Arthurius Deity',
-    epCost: 2800,
-    description: 'Divine bear of legend, king of beasts and protector of realms',
-    bonuses: { hp: 0.65, def: 0.5, atk: 0.4, regeneration: 0.5, primalPower: 0.8, divineAuthority: 0.9 }
+  supernaturalForm: {
+    number: 12,
+    name: 'Titan of Eternity',
+    description: 'Being transcending time and space, infinite protector',
+    growth: EVOLUTION_PHASES.ELDER,
+    rarity: EVOLUTION_RARITY.SUPERNATURAL,
+    epCost: 6000,
+    requirements: {
+      minLevel: 100,
+      minStats: { atk: 120, def: 160, spd: 70 },
+      minBattlesWon: 3000,
+      epThreshold: 15000,
+      rareItems: 10,
+      timePlayed: 1000,
+      specialItems: ['essence_of_chaos', 'void_crystal', 'eternal_flame']
+    },
+    bonuses: { atk: 0.6, def: 1.0, hp: 0.7, supernaturalShield: 2.0, realityAnchor: 1.5, infiniteGuard: 1.0 },
+    abilities: ['maul', 'growl', 'bash', 'charge', 'slam', 'earth_shake', 'void_protection', 'reality_anchoring', 'chaos_guard', 'infinity_shield']
+  },
+
+  statUpgrades: {
+    strength: {
+      name: 'Strength',
+      description: 'Increases attack and crushing power',
+      costPerPoint: 2,
+      maxPoints: 50,
+      effect: (points) => ({
+        atk: points * 0.12,
+        crushPower: points * 0.005
+      })
+    },
+    fortitude: {
+      name: 'Fortitude',
+      description: 'Improves defense and damage reduction',
+      costPerPoint: 2,
+      maxPoints: 60,
+      effect: (points) => ({
+        def: points * 0.1,
+        damageReduction: points * 0.004
+      })
+    },
+    endurance: {
+      name: 'Endurance',
+      description: 'Increases health and resilience',
+      costPerPoint: 2,
+      maxPoints: 50,
+      effect: (points) => ({
+        hp: points * 0.18,
+        regeneration: points * 0.003
+      })
+    }
   }
 };
