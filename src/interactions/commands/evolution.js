@@ -29,7 +29,7 @@ export const evolutionCommand = {
         embeds: [new EmbedBuilder()
           .setColor(THEME.color)
           .setTitle('🐾 Evolution System')
-          .setDescription('No evolutions available yet!\n\n**Evolution Tiers:**\n🐺 **Legendary** (200-320 EP) - Enhanced real animals\n🦕 **Ancient** (380-600 EP) - Prehistoric creatures\n🐉 **Mythical** (6000-8000 EP) - Legendary supernatural beings\n\nEvolution Points (EP) are earned by leveling up through battles.')
+          .setDescription('No evolutions available yet!\n\n**Evolution Tiers:**\n🐺 **Legendary** (200-320 EP) - Enhanced real animals\n🦕 **Ancient** (380-600 EP) - Prehistoric creatures\n🐉 **Mythical** (6000-10000 EP) - Legendary supernatural beings\n\n**Evolution Stages:** Each species has 8+ evolution stages with growth phases!\n\nEvolution Points (EP) are earned by leveling up through battles.')
           .addFields({
             name: 'Your EP',
             value: `${player.evolution_points} EP`,

@@ -362,7 +362,7 @@ export const currentSchema = schemaManager.defineSchema('animal_rpg', 1, (schema
     .addColumn('evolution_stage', ColumnType.INTEGER, {
       notNull: true,
       default: 1,
-      comment: 'Current evolution stage (1-5)'
+      comment: 'Current evolution stage (1-8+)'
     })
     .addColumn('evolution_branch', ColumnType.TEXT, {
       default: null,
