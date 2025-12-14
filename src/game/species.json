@@ -82,5 +82,135 @@
     "passive": "Venom Strike (high damage, low defense)",
     "pros": "Powerful attacks, fast",
     "cons": "Fragile, inconsistent damage"
+  },
+
+  "t_rex": {
+    "key": "t_rex",
+    "name": "Tyrannosaurus Rex",
+    "size": "Massive",
+    "diet": "Carnivore",
+    "mobility": "Ground",
+    "base": { "hp": 120, "atk": 45, "def": 25, "spd": 15 },
+    "growth": { "hp": 25, "atk": 12, "def": 8, "spd": 3 },
+    "passive": "King of Predators (massive damage, high HP)",
+    "pros": "Overwhelming power, tanky",
+    "cons": "Very slow, high resource cost"
+  },
+
+  "mammoth": {
+    "key": "mammoth",
+    "name": "Woolly Mammoth",
+    "size": "Colossal",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 180, "atk": 30, "def": 40, "spd": 8 },
+    "growth": { "hp": 35, "atk": 6, "def": 15, "spd": 1 },
+    "passive": "Ice Age Behemoth (extreme durability, slow but unstoppable)",
+    "pros": "Insanely tanky, high HP",
+    "cons": "Very slow, weak attacks"
+  },
+
+  "saber_tooth": {
+    "key": "saber_tooth",
+    "name": "Saber-Toothed Tiger",
+    "size": "Large",
+    "diet": "Carnivore",
+    "mobility": "Ground",
+    "base": { "hp": 85, "atk": 50, "def": 20, "spd": 25 },
+    "growth": { "hp": 18, "atk": 15, "def": 5, "spd": 8 },
+    "passive": "Ancient Predator (devastating attacks, agile)",
+    "pros": "Massive damage, good speed",
+    "cons": "Moderately fragile"
+  },
+
+  "triceratops": {
+    "key": "triceratops",
+    "name": "Triceratops",
+    "size": "Massive",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 140, "atk": 25, "def": 50, "spd": 10 },
+    "growth": { "hp": 28, "atk": 4, "def": 18, "spd": 2 },
+    "passive": "Armored Fortress (extreme defense, charging attacks)",
+    "pros": "Impenetrable defense, good HP",
+    "cons": "Slow, weak attacks"
+  },
+
+  "stegosaurus": {
+    "key": "stegosaurus",
+    "name": "Stegosaurus",
+    "size": "Massive",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 130, "atk": 20, "def": 45, "spd": 12 },
+    "growth": { "hp": 26, "atk": 3, "def": 16, "spd": 2 },
+    "passive": "Plated Guardian (thorns damage attackers, high defense)",
+    "pros": "Excellent defense, retaliatory damage",
+    "cons": "Slow, very weak attacks"
+  },
+
+  "dragon": {
+    "key": "dragon",
+    "name": "Ancient Dragon",
+    "size": "Titanic",
+    "diet": "Carnivore",
+    "mobility": "Flight",
+    "base": { "hp": 200, "atk": 65, "def": 35, "spd": 20 },
+    "growth": { "hp": 40, "atk": 18, "def": 12, "spd": 5 },
+    "passive": "Mythical Fire-Breather (ultimate power, flight, fire damage)",
+    "pros": "God-like stats, flight, special abilities",
+    "cons": "Extremely expensive, requires max level"
+  },
+
+  "phoenix": {
+    "key": "phoenix",
+    "name": "Phoenix",
+    "size": "Large",
+    "diet": "Carnivore",
+    "mobility": "Flight",
+    "base": { "hp": 90, "atk": 55, "def": 20, "spd": 50 },
+    "growth": { "hp": 20, "atk": 16, "def": 4, "spd": 15 },
+    "passive": "Immortal Flame (revives from defeat, fire attacks)",
+    "pros": "Blazing speed, resurrection ability",
+    "cons": "Moderately fragile, high cost"
+  },
+
+  "unicorn": {
+    "key": "unicorn",
+    "name": "Crystal Unicorn",
+    "size": "Large",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 100, "atk": 40, "def": 25, "spd": 55 },
+    "growth": { "hp": 22, "atk": 10, "def": 6, "spd": 18 },
+    "passive": "Crystal Magic (healing aura, magical attacks)",
+    "pros": "Lightning speed, magical abilities",
+    "cons": "Moderate defenses, expensive"
+  },
+
+  "griffin": {
+    "key": "griffin",
+    "name": "Griffin",
+    "size": "Large",
+    "diet": "Carnivore",
+    "mobility": "Flight",
+    "base": { "hp": 110, "atk": 45, "def": 30, "spd": 35 },
+    "growth": { "hp": 24, "atk": 12, "def": 8, "spd": 10 },
+    "passive": "Sky Predator (flight, powerful dive attacks)",
+    "pros": "Balanced power, flight, good all-around",
+    "cons": "High cost, requires high level"
+  },
+
+  "leviathan": {
+    "key": "leviathan",
+    "name": "Leviathan",
+    "size": "Titanic",
+    "diet": "Carnivore",
+    "mobility": "Water",
+    "base": { "hp": 250, "atk": 50, "def": 45, "spd": 15 },
+    "growth": { "hp": 45, "atk": 14, "def": 16, "spd": 3 },
+    "passive": "Sea Monster (aquatic dominance, crushing attacks)",
+    "pros": "Ultimate tank, massive HP and defense",
+    "cons": "Very slow, extremely expensive"
   }
 }
