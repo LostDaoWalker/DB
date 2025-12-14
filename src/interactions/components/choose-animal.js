@@ -1,7 +1,8 @@
 import { EmbedBuilder } from 'discord.js';
-import { THEME, cozyLine } from '../../constants/theme.js';
+import { THEME } from '../../constants/theme.js';
 import { createPlayer, getPlayer } from '../../db/index.js';
-import { getAnimal } from '../../game/animals.js';
+import { getAnimal } from '../../game/species/index.js';
+import { logPlayerRegistration } from '../../utils/playerActivityLogger.js';
 
 export const chooseAnimalComponent = {
   customId: 'choose_animal:v1',
@@ -11,26 +12,28 @@ export const chooseAnimalComponent = {
 
     const existing = getPlayer(interaction.user.id);
     if (existing) {
-      await interaction.update({ content: 'You already chose your animal. Use `/profile`.', components: [], embeds: [] });
+      await interaction.update('Already hunting.');
       return;
     }
 
     const animalKey = interaction.values[0];
     const animal = getAnimal(animalKey);
+    createPlayer({ userId: interaction.user.id, animalKey, now: Date.now() });
 
-    const now = Date.now();
-    createPlayer({ userId: interaction.user.id, animalKey, now });
+    // Log player registration
+    await logPlayerRegistration(interaction.user.id, interaction.user.username, animal.name);
 
-    const embed = new EmbedBuilder()
-      .setColor(THEME.ok)
-      .setTitle(`A new journey begins: ${animal.name}`)
-      .setDescription(
-        `You feel **${animal.vibe}**.\n` +
-          `Passive: **${animal.passive}**\n\n` +
-          'Next: try `/battle` or peek at `/profile`.'
-      )
-      .setFooter({ text: cozyLine() });
-
-    await interaction.update({ embeds: [embed], components: [] });
+    await interaction.update({
+      embeds: [new EmbedBuilder()
+        .setColor(THEME.ok)
+        .setTitle(`${getAnimalEmoji(animalKey)} ${animal.name}`)
+        .setDescription(`${animal.passive}`)
+      ],
+      components: []
+    });
   },
 };
+
+function getAnimalEmoji(animalKey) {
+  return { fox: '🦊', bear: '🐻', rabbit: '🐰', owl: '🦉' }[animalKey] || '🐾';
+}

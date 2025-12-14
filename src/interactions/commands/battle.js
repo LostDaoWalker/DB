@@ -1,11 +1,13 @@
 import { randomInt } from 'node:crypto';
 import { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { THEME, cozyLine } from '../../constants/theme.js';
+import { THEME, primalLine } from '../../constants/theme.js';
 import { getPlayer, updatePlayerXpAndBattleTime } from '../../db/index.js';
 import { levelFromXp, applyXp, xpForNext } from '../../game/leveling.js';
-import { listAnimals } from '../../game/animals.js';
+import { listAnimals } from '../../game/species/index.js';
 import { simulateBattle } from '../../game/battle/engine.js';
 import { renderBattleCard } from '../../ui/renderBattleCard.js';
+import { logBattleResult, logLevelUp } from '../../utils/playerActivityLogger.js';
+import { updatePlayerBattleStats } from '../../db/index.js';
 
 function pickEnemyAnimal(playerAnimalKey) {
   const animals = listAnimals().filter((a) => a.key !== playerAnimalKey);
@@ -17,20 +19,18 @@ function clamp(n, min, max) {
 }
 
 export const battleCommand = {
-  data: new SlashCommandBuilder().setName('battle').setDescription('Roam the woods and autobattle a critter.'),
+  data: new SlashCommandBuilder().setName('battle').setDescription('Battle other animals.'),
 
   async execute(interaction) {
     const p = getPlayer(interaction.user.id);
     if (!p) {
-      await interaction.reply({ content: 'Use `/start` to choose your animal first.', ephemeral: true });
+      await interaction.reply('No animal. Use `/start`.');
       return;
     }
 
     const now = Date.now();
-    const cooldownMs = 8000;
-    if (now - p.last_battle_at < cooldownMs) {
-      const wait = Math.ceil((cooldownMs - (now - p.last_battle_at)) / 1000);
-      await interaction.reply({ content: `Slow and cozy—try again in ${wait}s.`, ephemeral: true });
+    if (now - p.last_battle_at < 3000) {
+      await interaction.reply({ content: 'Recovering...', ephemeral: true });
       return;
     }
 
@@ -48,31 +48,53 @@ export const battleCommand = {
     const win = result.winner === 'player';
     const xpGain = win ? 18 + enemyLevel * 6 : 8 + enemyLevel * 3;
     const next = applyXp(p.xp, xpGain);
+    const { level: oldLevel } = levelFromXp(p.xp);
     updatePlayerXpAndBattleTime({ userId: p.user_id, xp: next.totalXp, lastBattleAt: now });
 
-    const title = win ? 'A cozy victory!' : 'A gentle defeat';
+    // Update battle statistics
+    await updatePlayerBattleStats({ userId: interaction.user.id, won: win, now });
+
+    // Log battle result
+    await logBattleResult(
+      interaction.user.id,
+      interaction.user.username,
+      result.player.name,
+      result.enemy.name,
+      result.winner,
+      xpGain,
+      next.level > oldLevel
+    );
+
+    // Log level up if applicable
+    if (next.level > oldLevel) {
+      await logLevelUp(interaction.user.id, interaction.user.username, result.player.name, next.level);
+    }
+
+    const title = win ? 'Victory' : 'Defeated';
     const image = renderBattleCard({ title, player: result.player, enemy: result.enemy, winner: result.winner });
     const file = new AttachmentBuilder(image, { name: 'battle.png' });
 
     const nextReq = xpForNext(next.level);
-    const embed = new EmbedBuilder()
-      .setColor(win ? THEME.ok : THEME.danger)
-      .setTitle(title)
-      .setDescription(
-        `${win ? 'You outlasted your opponent.' : 'You stumble back onto the moss, breathing steady.'}\n` +
-          `Gained **${xpGain} XP**. Level **${next.level}** • XP **${next.xpIntoLevel}/${nextReq}**`
-      )
-      .addFields(
-        { name: 'You', value: `${result.player.name} Lv.${result.player.level}`, inline: true },
-        { name: 'Opponent', value: `${result.enemy.name} Lv.${result.enemy.level}`, inline: true }
-      )
-      .setImage('attachment://battle.png')
-      .setFooter({ text: cozyLine() });
+    const leveledUp = next.level > result.player.level;
 
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('battle_again:v1').setLabel('Battle again').setStyle(ButtonStyle.Primary)
-    );
-
-    await interaction.editReply({ embeds: [embed], files: [file], components: [row] });
+    await interaction.editReply({
+      embeds: [new EmbedBuilder()
+        .setColor(win ? THEME.ok : THEME.danger)
+        .setTitle(title)
+        .setDescription(`${leveledUp ? 'LEVEL UP ' : ''}+${xpGain} XP\nLevel ${next.level} • ${next.xpIntoLevel}/${nextReq} XP`)
+        .addFields(
+          { name: result.player.name, value: `Level ${result.player.level}${leveledUp ? ' → ' + next.level : ''}`, inline: true },
+          { name: result.enemy.name, value: `Level ${result.enemy.level}`, inline: true }
+        )
+        .setImage('attachment://battle.png')
+      ],
+      files: [file],
+      components: [new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('battle_again:v1')
+          .setLabel('Battle Again')
+          .setStyle(ButtonStyle.Primary)
+      )]
+    });
   },
 };
