@@ -65,3 +65,4 @@ export function getAllSpeciesModules() {
 // Export specific species for direct access
 export { foxSpecies } from './fox.js';
 export { rabbitSpecies } from './rabbit.js';
+export { bearSpecies } from './bear.js';
