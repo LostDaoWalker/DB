@@ -6,7 +6,7 @@ export const foxSpecies = {
   type: 'cunning',
   diet: 'carnivore',
 
-  // 5-stage evolution tree with HIGHLY BUFFED costs
+  // 5-stage evolution tree
   evolutions: {
     1: {
       name: 'Fox Kit',
@@ -19,7 +19,7 @@ export const foxSpecies = {
     2: {
       name: 'Young Fox',
       growth: 'young',
-      epCost: 100, // Was 25, now 4x more expensive
+      epCost: 25,
       description: 'Growing bolder, developing hunting skills',
       bonuses: { spd: 0.1, atk: 0.05 },
       abilities: ['sneak', 'scavenge', 'pounce'],
@@ -41,7 +41,7 @@ export const foxSpecies = {
     3: {
       name: 'Adult Fox',
       growth: 'adult',
-      epCost: 300, // Was 75, now 4x more expensive
+      epCost: 75,
       description: 'Prime of life, skilled hunter',
       bonuses: { spd: 0.15, atk: 0.1 },
       abilities: ['sneak', 'scavenge', 'pounce', 'evade']
@@ -49,7 +49,7 @@ export const foxSpecies = {
     4: {
       name: 'Elder Fox',
       growth: 'elder',
-      epCost: 600, // Was 150, now 4x more expensive
+      epCost: 150,
       description: 'Wise and experienced, territory master',
       bonuses: { spd: 0.2, atk: 0.15, def: 0.1 },
       abilities: ['sneak', 'scavenge', 'pounce', 'evade', 'territory']
@@ -57,7 +57,7 @@ export const foxSpecies = {
     5: {
       name: 'Fox Spirit',
       growth: 'legendary',
-      epCost: 1200, // Was 300, now 4x more expensive
+      epCost: 300,
       description: 'Mythical being, guardian of the wild',
       bonuses: { spd: 0.3, atk: 0.25, def: 0.15, critChance: 0.15 },
       abilities: ['sneak', 'scavenge', 'pounce', 'evade', 'territory', 'spirit_walk']
