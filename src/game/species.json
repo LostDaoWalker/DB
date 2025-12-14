@@ -84,6 +84,331 @@
     "cons": "Fragile, inconsistent damage"
   },
 
+  "cat": {
+    "key": "cat",
+    "name": "Cat",
+    "size": "Small",
+    "diet": "Carnivore",
+    "mobility": "Ground",
+    "base": { "hp": 18, "atk": 8, "def": 3, "spd": 12 },
+    "growth": { "hp": 4, "atk": 2, "def": 1, "spd": 3 },
+    "passive": "Nine Lives (evasion and luck)",
+    "pros": "Very fast, agile",
+    "cons": "Very fragile"
+  },
+
+  "ape": {
+    "key": "ape",
+    "name": "Ape",
+    "size": "Large",
+    "diet": "Omnivore",
+    "mobility": "Ground",
+    "base": { "hp": 35, "atk": 12, "def": 8, "spd": 6 },
+    "growth": { "hp": 8, "atk": 3, "def": 2, "spd": 1 },
+    "passive": "Primal Rage (strength increases when damaged)",
+    "pros": "Strong, durable",
+    "cons": "Slow, predictable"
+  },
+
+  "butterfly": {
+    "key": "butterfly",
+    "name": "Butterfly",
+    "size": "Tiny",
+    "diet": "Herbivore",
+    "mobility": "Flight",
+    "base": { "hp": 8, "atk": 2, "def": 2, "spd": 15 },
+    "growth": { "hp": 2, "atk": 1, "def": 1, "spd": 4 },
+    "passive": "Metamorphosis (transforms under pressure)",
+    "pros": "Extremely fast",
+    "cons": "Extremely fragile"
+  },
+
+  "ostrich": {
+    "key": "ostrich",
+    "name": "Ostrich",
+    "size": "Large",
+    "diet": "Omnivore",
+    "mobility": "Ground",
+    "base": { "hp": 28, "atk": 9, "def": 6, "spd": 14 },
+    "growth": { "hp": 6, "atk": 2, "def": 2, "spd": 3 },
+    "passive": "Flightless Sprint (bursts of extreme speed)",
+    "pros": "Fast with good HP",
+    "cons": "Average defense"
+  },
+
+  "dog": {
+    "key": "dog",
+    "name": "Dog",
+    "size": "Medium",
+    "diet": "Omnivore",
+    "mobility": "Ground",
+    "base": { "hp": 25, "atk": 8, "def": 5, "spd": 10 },
+    "growth": { "hp": 5, "atk": 2, "def": 2, "spd": 2 },
+    "passive": "Loyal Companion (team bonuses)",
+    "pros": "Balanced, reliable",
+    "cons": "No standout strengths"
+  },
+
+  "moose": {
+    "key": "moose",
+    "name": "Moose",
+    "size": "Massive",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 45, "atk": 7, "def": 12, "spd": 4 },
+    "growth": { "hp": 10, "atk": 1, "def": 4, "spd": 1 },
+    "passive": "Majestic Antlers (charging attacks)",
+    "pros": "Very tanky, high HP",
+    "cons": "Very slow, weak attacks"
+  },
+
+  "goat": {
+    "key": "goat",
+    "name": "Goat",
+    "size": "Medium",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 22, "atk": 6, "def": 8, "spd": 8 },
+    "growth": { "hp": 5, "atk": 1, "def": 3, "spd": 2 },
+    "passive": "Mountain Climber (terrain advantage)",
+    "pros": "Good defense, agile",
+    "cons": "Weak attacks"
+  },
+
+  "hippo": {
+    "key": "hippo",
+    "name": "Hippo",
+    "size": "Massive",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 50, "atk": 15, "def": 15, "spd": 3 },
+    "growth": { "hp": 12, "atk": 4, "def": 5, "spd": 1 },
+    "passive": "River Guardian (aquatic dominance)",
+    "pros": "Extremely tanky, strong",
+    "cons": "Very slow"
+  },
+
+  "zebra": {
+    "key": "zebra",
+    "name": "Zebra",
+    "size": "Large",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 30, "atk": 6, "def": 7, "spd": 11 },
+    "growth": { "hp": 7, "atk": 1, "def": 2, "spd": 3 },
+    "passive": "Stripe Camouflage (evasion in herds)",
+    "pros": "Fast, decent HP",
+    "cons": "Weak attacks, average defense"
+  },
+
+  "giraffe": {
+    "key": "giraffe",
+    "name": "Giraffe",
+    "size": "Massive",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 40, "atk": 8, "def": 10, "spd": 7 },
+    "growth": { "hp": 9, "atk": 2, "def": 3, "spd": 2 },
+    "passive": "Long Neck Advantage (reach attacks)",
+    "pros": "Tall, good reach",
+    "cons": "Slow, vulnerable legs"
+  },
+
+  "kangaroo": {
+    "key": "kangaroo",
+    "name": "Kangaroo",
+    "size": "Large",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 32, "atk": 11, "def": 6, "spd": 13 },
+    "growth": { "hp": 7, "atk": 3, "def": 2, "spd": 3 },
+    "passive": "Boxing Marsupial (powerful kicks)",
+    "pros": "Strong attacks, fast",
+    "cons": "Average defense"
+  },
+
+  "spider": {
+    "key": "spider",
+    "name": "Spider",
+    "size": "Tiny",
+    "diet": "Carnivore",
+    "mobility": "Ground",
+    "base": { "hp": 12, "atk": 12, "def": 4, "spd": 11 },
+    "growth": { "hp": 3, "atk": 4, "def": 1, "spd": 2 },
+    "passive": "Web Weaver (trap and poison)",
+    "pros": "Strong attacks for size",
+    "cons": "Very fragile"
+  },
+
+  "ant": {
+    "key": "ant",
+    "name": "Ant",
+    "size": "Tiny",
+    "diet": "Omnivore",
+    "mobility": "Ground",
+    "base": { "hp": 15, "atk": 6, "def": 6, "spd": 8 },
+    "growth": { "hp": 4, "atk": 2, "def": 2, "spd": 1 },
+    "passive": "Colony Strength (numbers advantage)",
+    "pros": "Team player",
+    "cons": "Individually weak"
+  },
+
+  "mantis": {
+    "key": "mantis",
+    "name": "Mantis",
+    "size": "Small",
+    "diet": "Carnivore",
+    "mobility": "Ground",
+    "base": { "hp": 16, "atk": 14, "def": 5, "spd": 9 },
+    "growth": { "hp": 4, "atk": 4, "def": 1, "spd": 2 },
+    "passive": "Praying Strike (precision attacks)",
+    "pros": "Very strong attacks",
+    "cons": "Fragile"
+  },
+
+  "ghost": {
+    "key": "ghost",
+    "name": "Ghost",
+    "size": "Medium",
+    "diet": "Spirit",
+    "mobility": "Phasing",
+    "base": { "hp": 25, "atk": 10, "def": 8, "spd": 10 },
+    "growth": { "hp": 6, "atk": 3, "def": 3, "spd": 2 },
+    "passive": "Spectral Form (phasing through attacks)",
+    "pros": "Intangible, mysterious",
+    "cons": "Rare, supernatural"
+  },
+
+  "t_rex": {
+    "key": "t_rex",
+    "name": "Tyrannosaurus Rex",
+    "size": "Massive",
+    "diet": "Carnivore",
+    "mobility": "Ground",
+    "base": { "hp": 120, "atk": 45, "def": 25, "spd": 15 },
+    "growth": { "hp": 25, "atk": 12, "def": 8, "spd": 3 },
+    "passive": "King of Predators (massive damage, high HP)",
+    "pros": "Overwhelming power, tanky",
+    "cons": "Very slow, high resource cost"
+  },
+
+  "mammoth": {
+    "key": "mammoth",
+    "name": "Woolly Mammoth",
+    "size": "Colossal",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 180, "atk": 30, "def": 40, "spd": 8 },
+    "growth": { "hp": 35, "atk": 6, "def": 15, "spd": 1 },
+    "passive": "Ice Age Behemoth (extreme durability, slow but unstoppable)",
+    "pros": "Insanely tanky, high HP",
+    "cons": "Very slow, weak attacks"
+  },
+
+  "saber_tooth": {
+    "key": "saber_tooth",
+    "name": "Saber-Toothed Tiger",
+    "size": "Large",
+    "diet": "Carnivore",
+    "mobility": "Ground",
+    "base": { "hp": 85, "atk": 50, "def": 20, "spd": 25 },
+    "growth": { "hp": 18, "atk": 15, "def": 5, "spd": 8 },
+    "passive": "Ancient Predator (devastating attacks, agile)",
+    "pros": "Massive damage, good speed",
+    "cons": "Moderately fragile"
+  },
+
+  "triceratops": {
+    "key": "triceratops",
+    "name": "Triceratops",
+    "size": "Massive",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 140, "atk": 25, "def": 50, "spd": 10 },
+    "growth": { "hp": 28, "atk": 4, "def": 18, "spd": 2 },
+    "passive": "Armored Fortress (extreme defense, charging attacks)",
+    "pros": "Impenetrable defense, good HP",
+    "cons": "Slow, weak attacks"
+  },
+
+  "stegosaurus": {
+    "key": "stegosaurus",
+    "name": "Stegosaurus",
+    "size": "Massive",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 130, "atk": 20, "def": 45, "spd": 12 },
+    "growth": { "hp": 26, "atk": 3, "def": 16, "spd": 2 },
+    "passive": "Plated Guardian (thorns damage attackers, high defense)",
+    "pros": "Excellent defense, retaliatory damage",
+    "cons": "Slow, very weak attacks"
+  },
+
+  "dragon": {
+    "key": "dragon",
+    "name": "Ancient Dragon",
+    "size": "Titanic",
+    "diet": "Carnivore",
+    "mobility": "Flight",
+    "base": { "hp": 200, "atk": 65, "def": 35, "spd": 20 },
+    "growth": { "hp": 40, "atk": 18, "def": 12, "spd": 5 },
+    "passive": "Mythical Fire-Breather (ultimate power, flight, fire damage)",
+    "pros": "God-like stats, flight, special abilities",
+    "cons": "Extremely expensive, requires max level"
+  },
+
+  "phoenix": {
+    "key": "phoenix",
+    "name": "Phoenix",
+    "size": "Large",
+    "diet": "Carnivore",
+    "mobility": "Flight",
+    "base": { "hp": 90, "atk": 55, "def": 20, "spd": 50 },
+    "growth": { "hp": 20, "atk": 16, "def": 4, "spd": 15 },
+    "passive": "Immortal Flame (revives from defeat, fire attacks)",
+    "pros": "Blazing speed, resurrection ability",
+    "cons": "Moderately fragile, high cost"
+  },
+
+  "unicorn": {
+    "key": "unicorn",
+    "name": "Crystal Unicorn",
+    "size": "Large",
+    "diet": "Herbivore",
+    "mobility": "Ground",
+    "base": { "hp": 100, "atk": 40, "def": 25, "spd": 55 },
+    "growth": { "hp": 22, "atk": 10, "def": 6, "spd": 18 },
+    "passive": "Crystal Magic (healing aura, magical attacks)",
+    "pros": "Lightning speed, magical abilities",
+    "cons": "Moderate defenses, expensive"
+  },
+
+  "griffin": {
+    "key": "griffin",
+    "name": "Griffin",
+    "size": "Large",
+    "diet": "Carnivore",
+    "mobility": "Flight",
+    "base": { "hp": 110, "atk": 45, "def": 30, "spd": 35 },
+    "growth": { "hp": 24, "atk": 12, "def": 8, "spd": 10 },
+    "passive": "Sky Predator (flight, powerful dive attacks)",
+    "pros": "Balanced power, flight, good all-around",
+    "cons": "High cost, requires high level"
+  },
+
+  "leviathan": {
+    "key": "leviathan",
+    "name": "Leviathan",
+    "size": "Titanic",
+    "diet": "Carnivore",
+    "mobility": "Water",
+    "base": { "hp": 250, "atk": 50, "def": 45, "spd": 15 },
+    "growth": { "hp": 45, "atk": 14, "def": 16, "spd": 3 },
+    "passive": "Sea Monster (aquatic dominance, crushing attacks)",
+    "pros": "Ultimate tank, massive HP and defense",
+    "cons": "Very slow, extremely expensive"
+  }
+
   "t_rex": {
     "key": "t_rex",
     "name": "Tyrannosaurus Rex",
