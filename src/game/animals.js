@@ -33,8 +33,11 @@ export const ANIMALS = {
   },
 };
 
+const ANIMALS_LIST = Object.freeze(Object.values(ANIMALS));
+const statsCache = new Map();
+
 export function listAnimals() {
-  return Object.values(ANIMALS);
+  return ANIMALS_LIST;
 }
 
 export function getAnimal(key) {
@@ -46,11 +49,21 @@ export function getAnimal(key) {
 export function getStats(animalKey, level) {
   const a = getAnimal(animalKey);
   const L = Math.max(1, Math.floor(level));
+  
+  // Cache stats by key+level to avoid recalculation
+  const cacheKey = `${animalKey}:${L}`;
+  if (statsCache.has(cacheKey)) {
+    return statsCache.get(cacheKey);
+  }
+
   const n = L - 1;
-  return {
+  const stats = {
     hp: a.base.hp + a.growth.hp * n,
     atk: a.base.atk + a.growth.atk * n,
     def: a.base.def + a.growth.def * n,
     spd: a.base.spd + a.growth.spd * n,
   };
+
+  statsCache.set(cacheKey, stats);
+  return stats;
 }
