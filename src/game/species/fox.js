@@ -135,11 +135,11 @@ export const foxSpecies = {
       bonuses: { spd: 0.5, atk: 0.45, def: 0.35, critChance: 0.4, multiStrike: 0.6, fateWeaver: 0.7, creationForce: 1.0 },
       abilities: ['sneak', 'scavenge', 'pounce', 'evade', 'territory', 'spirit_walk', 'multi_tail', 'perfect_illusion', 'celestial_blessing', 'fate_manipulation', 'primordial_creation', 'reality_warping', 'eternal_guardian'],
       phases: [
-        { name: 'Origin Seeker', phase: 1, description: 'Understanding the beginning of all things', bonusMultiplier: 4.1 },
-        { name: 'Creation Forger', phase: 2, description: 'Shaping reality from nothing', bonusMultiplier: 4.2 },
-        { name: 'Destruction Weaver', phase: 3, description: 'Master of endings and beginnings', bonusMultiplier: 4.3 },
-        { name: 'Eternal Progenitor', phase: 4, description: 'Source of all fox life', bonusMultiplier: 4.4 },
-        { name: 'Absolute Primordial', phase: 5, description: 'Beyond time, space, and reality itself', bonusMultiplier: 4.5 }
+        { name: 'Awakening', phase: 1, description: 'First stirrings of potential', bonusMultiplier: 4.1 },
+        { name: 'Growth', phase: 2, description: 'Developing basic abilities', bonusMultiplier: 4.2 },
+        { name: 'Maturation', phase: 3, description: 'Gaining confidence and skill', bonusMultiplier: 4.3 },
+        { name: 'Mastery', phase: 4, description: 'Refining techniques and instincts', bonusMultiplier: 4.4 },
+        { name: 'Ascension', phase: 5, description: 'Transcending to the next level', bonusMultiplier: 4.5 }
       ]
     }
   },
