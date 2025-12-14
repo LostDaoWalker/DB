@@ -357,11 +357,33 @@ export const currentSchema = schemaManager.defineSchema('animal_rpg', 1, (schema
     .addColumn('evolution_points', ColumnType.INTEGER, {
       notNull: true,
       default: 0,
-      comment: 'Evolution Points earned from leveling up'
+      comment: 'Evolution Points earned from leveling up and hunting'
     })
-    .addColumn('evolved_animal_key', ColumnType.TEXT, {
+    .addColumn('evolution_stage', ColumnType.INTEGER, {
+      notNull: true,
+      default: 1,
+      comment: 'Current evolution stage (1-5)'
+    })
+    .addColumn('evolution_branch', ColumnType.TEXT, {
       default: null,
-      comment: 'Key of evolved animal (if any)'
+      comment: 'Evolution branch choice (cunning/fierce/etc)'
+    })
+    .addColumn('stat_points', ColumnType.JSON, {
+      default: '{}',
+      comment: 'Allocated stat points by type'
+    })
+    .addColumn('unlocked_abilities', ColumnType.JSON, {
+      default: '[]',
+      comment: 'Array of unlocked ability names'
+    })
+    .addColumn('hunting_streak', ColumnType.INTEGER, {
+      notNull: true,
+      default: 0,
+      comment: 'Current hunting streak for autobattles'
+    })
+    .addColumn('last_hunt_at', ColumnType.DATETIME, {
+      default: 0,
+      comment: 'Last time player participated in hunting'
     });
 
   // Add indexes for performance

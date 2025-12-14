@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sqlite3 from 'sqlite3';
-import { getEnv } from '../config/env.js';
-import { logger } from '../logger.js';
+import { getEnv } from '../src/config/env.js';
+import { logger } from '../src/logger.js';
 import { setupAutomaticBackups } from './backup.js';
 import { SchemaExecutor } from './schema-executor.js';
 
@@ -61,11 +61,24 @@ export function getDb() {
 export function getPlayer(userId) {
   return safeDbOperation(() => {
     return new Promise((resolve, reject) => {
-      db.get('SELECT user_id, animal_key, xp, last_battle_at, created_at, last_animal_change, evolution_points, evolved_animal_key FROM players WHERE user_id = ?', [userId], (err, row) => {
+      db.get('SELECT user_id, animal_key, xp, last_battle_at, created_at, last_animal_change, evolution_points, evolution_stage, evolution_branch, stat_points, unlocked_abilities, hunting_streak, last_hunt_at FROM players WHERE user_id = ?', [userId], (err, row) => {
         if (err) {
           logger.error({ err, userId }, 'Database error in getPlayer');
           return reject(err);
         }
+
+        if (row) {
+          // Parse JSON fields
+          try {
+            row.stat_points = JSON.parse(row.stat_points || '{}');
+            row.unlocked_abilities = JSON.parse(row.unlocked_abilities || '[]');
+          } catch (parseErr) {
+            logger.warn({ err: parseErr, userId }, 'Failed to parse player JSON fields, using defaults');
+            row.stat_points = {};
+            row.unlocked_abilities = [];
+          }
+        }
+
         resolve(row || null);
       });
     });
@@ -357,4 +370,105 @@ export function evolvePlayerAnimal(userId, evolvedAnimalKey, epCost) {
 
     return await getPlayer(userId);
   }, 'Player animal evolution');
+}
+
+export function evolvePlayerStage(userId, newStage, epCost) {
+  return safeDbOperation(async () => {
+    // Spend EP and update stage
+    await spendEvolutionPoints(userId, epCost);
+
+    await new Promise((resolve, reject) => {
+      db.run('UPDATE players SET evolution_stage = ? WHERE user_id = ?', [newStage, userId], function(err) {
+        if (err) {
+          logger.error({ err, userId, newStage }, 'Database error in evolvePlayerStage');
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+
+    return await getPlayer(userId);
+  }, 'Player evolution stage advancement');
+}
+
+export function setEvolutionBranch(userId, branch) {
+  return safeDbOperation(() => {
+    return new Promise((resolve, reject) => {
+      db.run('UPDATE players SET evolution_branch = ? WHERE user_id = ?', [branch, userId], function(err) {
+        if (err) {
+          logger.error({ err, userId, branch }, 'Database error in setEvolutionBranch');
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }, 'Evolution branch selection');
+}
+
+export function allocateStatPoints(userId, statType, points) {
+  return safeDbOperation(async () => {
+    const player = await getPlayer(userId);
+    if (!player) throw new Error('Player not found');
+
+    // Update stat points allocation
+    const currentPoints = player.stat_points[statType] || 0;
+    const newPoints = currentPoints + points;
+    player.stat_points[statType] = newPoints;
+
+    await new Promise((resolve, reject) => {
+      db.run('UPDATE players SET stat_points = ? WHERE user_id = ?', [JSON.stringify(player.stat_points), userId], function(err) {
+        if (err) {
+          logger.error({ err, userId, statType, points }, 'Database error in allocateStatPoints');
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+
+    return await getPlayer(userId);
+  }, 'Stat points allocation');
+}
+
+export function unlockAbility(userId, abilityName) {
+  return safeDbOperation(async () => {
+    const player = await getPlayer(userId);
+    if (!player) throw new Error('Player not found');
+
+    // Add ability if not already unlocked
+    if (!player.unlocked_abilities.includes(abilityName)) {
+      player.unlocked_abilities.push(abilityName);
+
+      await new Promise((resolve, reject) => {
+        db.run('UPDATE players SET unlocked_abilities = ? WHERE user_id = ?', [JSON.stringify(player.unlocked_abilities), userId], function(err) {
+          if (err) {
+            logger.error({ err, userId, abilityName }, 'Database error in unlockAbility');
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+    }
+
+    return await getPlayer(userId);
+  }, 'Ability unlocking');
+}
+
+export function updateHuntingStreak(userId, won, now) {
+  return safeDbOperation(() => {
+    return new Promise((resolve, reject) => {
+      const streakUpdate = won ? 'hunting_streak = hunting_streak + 1' : 'hunting_streak = 0';
+
+      db.run(`
+        UPDATE players
+        SET ${streakUpdate}, last_hunt_at = ?
+        WHERE user_id = ?
+      `, [now, userId], function(err) {
+        if (err) {
+          logger.error({ err, userId, won }, 'Database error in updateHuntingStreak');
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }, 'Hunting streak update');
 }
