@@ -14,22 +14,35 @@ export const profileCommand = {
       return;
     }
 
-    const { level, xpIntoLevel } = levelFromXp(p.xp);
-    const next = xpForNext(level);
-    const animal = getAnimal(p.animal_key);
-    const stats = getStats(p.animal_key, level);
+    // Validate animal key exists and is valid
+    if (!p.animal_key) {
+      throw new Error('Player has no animal assigned - please use /start to choose an animal');
+    }
 
-    await interaction.reply({
-      embeds: [new EmbedBuilder()
-        .setColor(THEME.color)
-        .setTitle(`${getAnimalEmoji(p.animal_key)} ${animal.name}`)
-        .setDescription(`Level ${level}\n${xpIntoLevel}/${next} XP\n\n${animal.passive}`)
-        .addFields({
-          name: 'Stats',
-          value: `${stats.hp} HP • ${stats.atk} ATK • ${stats.def} DEF • ${stats.spd} SPD`
-        })
-      ]
-    });
+    let animal, stats;
+    try {
+      const { level, xpIntoLevel } = levelFromXp(p.xp);
+      const next = xpForNext(level);
+      animal = getAnimal(p.animal_key);
+      stats = getStats(p.animal_key, level);
+
+      await interaction.reply({
+        embeds: [new EmbedBuilder()
+          .setColor(THEME.color)
+          .setTitle(`${getAnimalEmoji(p.animal_key)} ${animal.name}`)
+          .setDescription(`Level ${level}\n${xpIntoLevel}/${next} XP\n\n${animal.passive}`)
+          .addFields({
+            name: 'Stats',
+            value: `${stats.hp} HP • ${stats.atk} ATK • ${stats.def} DEF • ${stats.spd} SPD`
+          })
+        ]
+      });
+    } catch (err) {
+      if (err.message.includes('Unknown animal key')) {
+        throw new Error(`Invalid animal data for player - animal key "${p.animal_key}" not found. Please contact support.`);
+      }
+      throw err;
+    }
   },
 };
 

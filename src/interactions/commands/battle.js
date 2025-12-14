@@ -8,6 +8,7 @@ import { simulateBattle } from '../../game/battle/engine.js';
 import { renderBattleCard } from '../../ui/renderBattleCard.js';
 import { logBattleResult, logLevelUp } from '../../utils/playerActivityLogger.js';
 import { updatePlayerBattleStats } from '../../db/index.js';
+import { logger } from '../../logger.js';
 
 function pickEnemyAnimal(playerAnimalKey) {
   const animals = listAnimals().filter((a) => a.key !== playerAnimalKey);
@@ -71,8 +72,15 @@ export const battleCommand = {
     }
 
     const title = win ? 'Victory' : 'Defeated';
-    const image = renderBattleCard({ title, player: result.player, enemy: result.enemy, winner: result.winner });
-    const file = new AttachmentBuilder(image, { name: 'battle.png' });
+    let file;
+    try {
+      const image = renderBattleCard({ title, player: result.player, enemy: result.enemy, winner: result.winner });
+      file = new AttachmentBuilder(image, { name: 'battle.png' });
+    } catch (renderErr) {
+      // If rendering fails, continue without the image but log the error
+      logger.warn({ err: renderErr }, 'Battle card rendering failed, continuing without image');
+      // Don't throw here - the battle result is still valid
+    }
 
     const nextReq = xpForNext(next.level);
     const leveledUp = next.level > result.player.level;
