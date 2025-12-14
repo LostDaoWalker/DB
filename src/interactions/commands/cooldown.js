@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { THEME, primalLine } from '../../constants/theme.js';
+import { THEME, primalLine } from '../constants/theme.js';
 import { getPlayer } from '../../db/index.js';
 
 export const cooldownCommand = {

@@ -1,5 +1,5 @@
 import { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
-import { THEME } from '../../../constants/theme.js';
+import { THEME } from '../../constants/theme.js';
 import { getPlayer } from '../../../db/index.js';
 import { listAnimals } from '../../../game/species/index.js';
 
