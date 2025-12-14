@@ -48,12 +48,12 @@ export function epRewardForLevel(level) {
 // Get total EP cost for evolving to a specific animal - PROPER TIERED COSTS
 export function epCostForEvolution(evolvedAnimalKey) {
   const evolutionCosts = {
-    // Mythical animals (supernatural creatures - most expensive)
-    'dragon': 1500,
-    'phoenix': 1400,
-    'unicorn': 1300,
-    'griffin': 1200,
-    'leviathan': 1100,
+    // Mythical animals (supernatural creatures - THOUSANDS of EP)
+    'dragon': 8000,
+    'phoenix': 7500,
+    'unicorn': 7000,
+    'griffin': 6500,
+    'leviathan': 6000,
 
     // Ancient animals (prehistoric creatures - mid-tier)
     't_rex': 600,

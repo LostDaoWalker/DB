@@ -29,7 +29,7 @@ export const evolutionCommand = {
         embeds: [new EmbedBuilder()
           .setColor(THEME.color)
           .setTitle('🐾 Evolution System')
-          .setDescription('No evolutions available yet!\n\n**Evolution Tiers:**\n🐺 **Legendary** (200-320 EP) - Enhanced real animals\n🦕 **Ancient** (380-600 EP) - Prehistoric creatures\n🐉 **Mythical** (1100-1500 EP) - Supernatural beings\n\nEvolution Points (EP) are earned by leveling up through battles.')
+          .setDescription('No evolutions available yet!\n\n**Evolution Tiers:**\n🐺 **Legendary** (200-320 EP) - Enhanced real animals\n🦕 **Ancient** (380-600 EP) - Prehistoric creatures\n🐉 **Mythical** (6000-8000 EP) - Legendary supernatural beings\n\nEvolution Points (EP) are earned by leveling up through battles.')
           .addFields({
             name: 'Your EP',
             value: `${player.evolution_points} EP`,
@@ -92,13 +92,13 @@ function getAvailableEvolutions(player) {
       { key: 'stegosaurus', name: 'Stegosaurus', epCost: 380, description: 'Plated dinosaur', bonus: '+50% DEF, +30% HP' },
     ],
 
-    // Mythical evolutions (supernatural creatures - only after legendary + ancient progress)
+    // Mythical evolutions (supernatural creatures - INSANELY expensive endgame)
     mythical: [
-      { key: 'dragon', name: 'Ancient Dragon', epCost: 1500, description: 'Mythical fire-breathing beast', bonus: '+150% ATK, +50% HP, +50% DEF' },
-      { key: 'phoenix', name: 'Phoenix', epCost: 1400, description: 'Immortal bird of flame', bonus: '+120% ATK, +80% SPD, +40% HP' },
-      { key: 'unicorn', name: 'Crystal Unicorn', epCost: 1300, description: 'Magical horned equine', bonus: '+100% SPD, +60% ATK, +30% DEF' },
-      { key: 'griffin', name: 'Griffin', epCost: 1200, description: 'Lion-eagle hybrid', bonus: '+90% ATK, +70% SPD, +40% DEF' },
-      { key: 'leviathan', name: 'Leviathan', epCost: 1100, description: 'Sea monster of legend', bonus: '+110% HP, +60% ATK, +50% DEF' },
+      { key: 'dragon', name: 'Ancient Dragon', epCost: 8000, description: 'Mythical fire-breathing beast', bonus: '+150% ATK, +50% HP, +50% DEF' },
+      { key: 'phoenix', name: 'Phoenix', epCost: 7500, description: 'Immortal bird of flame', bonus: '+120% ATK, +80% SPD, +40% HP' },
+      { key: 'unicorn', name: 'Crystal Unicorn', epCost: 7000, description: 'Magical horned equine', bonus: '+100% SPD, +60% ATK, +30% DEF' },
+      { key: 'griffin', name: 'Griffin', epCost: 6500, description: 'Lion-eagle hybrid', bonus: '+90% ATK, +70% SPD, +40% DEF' },
+      { key: 'leviathan', name: 'Leviathan', epCost: 6000, description: 'Sea monster of legend', bonus: '+110% HP, +60% ATK, +50% DEF' },
     ],
   };
 
