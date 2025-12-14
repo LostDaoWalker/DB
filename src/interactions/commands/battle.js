@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { THEME, primalLine } from '../constants/theme.js';
+import { THEME, primalLine } from '../../constants/theme.js';
 import { getPlayer, updatePlayerXpAndBattleTime } from '../../db/index.js';
 import { levelFromXp, applyXp, xpForNext } from '../../game/leveling.js';
 import { listAnimals } from '../../game/species/index.js';

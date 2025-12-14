@@ -2,14 +2,14 @@ import process from 'node:process';
 import { Client, GatewayIntentBits, Partials, Options } from 'discord.js';
 import { getEnv } from './config/env.js';
 import { logger } from './logger.js';
-import { initDb } from './db/index.js';
+import { initDb } from '../db/index.js';
 import { registry } from './interactions/registry.js';
 import { setupCodebaseMonitor } from './utils/codebaseMonitor.js';
 import { setupPlayerActivityLogger } from './utils/playerActivityLogger.js';
 import { setupAutoGit } from './utils/autoGit.js';
 import { setupCommandRegistrar } from './utils/commandRegistrar.js';
 import { testChannelAccess } from './utils/channelTest.js';
-import { updatePlayerCommandUsage, logBotEvent } from './db/index.js';
+import { updatePlayerCommandUsage, logBotEvent } from '../db/index.js';
 
 // Ensure all errors are handled - no unhandled rejections or exceptions
 process.on('unhandledRejection', async (err) => {
