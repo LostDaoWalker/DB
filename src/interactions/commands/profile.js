@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { THEME, primalLine } from '../../constants/theme.js';
-import { getPlayer } from '../../db/index.js';
+import { getPlayer } from '../../../db/index.js';
 import { getAnimal, getStats } from '../../game/species/index.js';
 import { levelFromXp, xpForNext } from '../../game/leveling.js';
 

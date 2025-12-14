@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, EmbedBuilder } from 'discord.js';
 import { THEME, primalLine } from '../../../constants/theme.js';
-import { getPlayer } from '../../db/index.js';
+import { getPlayer } from '../../../db/index.js';
 import { listAnimals } from '../../game/species/index.js';
 
 export const startCommand = {

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { THEME, primalLine } from '../../constants/theme.js';
-import { getLeaderboard } from '../../db/index.js';
+import { getLeaderboard } from '../../../db/index.js';
 import os from 'node:os';
 
 export const statsCommand = {

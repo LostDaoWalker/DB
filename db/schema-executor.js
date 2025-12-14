@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import { logger } from '../logger.js';
+import { logger } from '../src/logger.js';
 import { currentSchema, schemaManager } from './schema.js';
 
 /**

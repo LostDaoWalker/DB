@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { THEME, primalLine } from '../../constants/theme.js';
-import { getLeaderboard } from '../../db/index.js';
+import { getLeaderboard } from '../../../db/index.js';
 import { getAnimal } from '../../game/species/index.js';
 
 export const foodchainCommand = {

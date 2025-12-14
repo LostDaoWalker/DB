@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { logger } from '../logger.js';
+import { logger } from '../src/logger.js';
 
 export function backupDatabase(dbPath) {
   try {

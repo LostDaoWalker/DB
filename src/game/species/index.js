@@ -1,21 +1,52 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-// Dynamic species loading from JSON
-let ANIMALS = {};
-let ANIMALS_LIST = [];
+// Dynamically load all species modules
+let speciesModules = {};
+let animalsList = [];
+let animalsMap = {};
 
 function loadSpecies() {
   try {
-    const speciesPath = path.join(process.cwd(), 'src', 'game', 'species.json');
-    const data = fs.readFileSync(speciesPath, 'utf8');
-    ANIMALS = JSON.parse(data);
-    ANIMALS_LIST = Object.freeze(Object.values(ANIMALS));
+    const speciesDir = path.join(process.cwd(), 'src', 'game', 'species');
+    const files = fs.readdirSync(speciesDir);
+
+    speciesModules = {};
+    animalsList = [];
+    animalsMap = {};
+
+    for (const file of files) {
+      if (file.endsWith('.js') && file !== 'index.js') {
+        const speciesKey = file.replace('.js', '');
+        const modulePath = path.join(speciesDir, file);
+
+        // Dynamic import
+        const module = await import(modulePath);
+        const speciesData = module.default || module[Object.keys(module)[0]];
+
+        speciesModules[speciesKey] = speciesData;
+        animalsMap[speciesKey] = speciesData;
+
+        // Create legacy format for backward compatibility
+        animalsList.push({
+          key: speciesData.key,
+          name: speciesData.name,
+          pros: speciesData.type || 'Balanced',
+          cons: 'Evolves over time',
+          passive: speciesData.diet || 'Adaptive',
+          base: speciesData.baseStats,
+          growth: speciesData.growthStats
+        });
+      }
+    }
+
+    console.log(`Loaded ${Object.keys(speciesModules).length} species modules`);
   } catch (err) {
-    console.error('Failed to load species:', err.message);
-    // Fallback to empty
-    ANIMALS = {};
-    ANIMALS_LIST = [];
+    console.error('Failed to load species modules:', err.message);
+    // Fallback empty data
+    speciesModules = {};
+    animalsList = [];
+    animalsMap = {};
   }
 }
 
@@ -24,61 +55,81 @@ loadSpecies();
 
 // Reload species on file changes for development
 if (process.env.NODE_ENV !== 'production') {
-  const speciesPath = path.join(process.cwd(), 'src', 'game', 'species.json');
-  fs.watchFile(speciesPath, { interval: 1000 }, () => {
-    console.log('Species file changed, reloading...');
-    loadSpecies();
+  const speciesDir = path.join(process.cwd(), 'src', 'game', 'species');
+  fs.watch(speciesDir, { recursive: true }, (eventType, filename) => {
+    if (filename && filename.endsWith('.js') && filename !== 'index.js') {
+      console.log(`Species file ${filename} changed, reloading...`);
+      loadSpecies();
+    }
   });
 }
-// Reduced cache size and TTL for memory optimization
-const statsCache = new Map();
-const CACHE_MAX_SIZE = 50; // Limit cache size
-const CACHE_TTL = 300000; // 5 minutes TTL
 
 export function listAnimals() {
-  return ANIMALS_LIST;
+  return animalsList;
 }
 
 export function getAnimal(key) {
-  const animal = ANIMALS[key];
-  if (!animal) throw new Error(`Unknown animal key: ${key}`);
-  return animal;
+  const species = speciesModules[key];
+  if (!species) {
+    // Try legacy JSON format as fallback
+    try {
+      const legacyPath = path.join(process.cwd(), 'src', 'game', 'species.json');
+      if (fs.existsSync(legacyPath)) {
+        const data = JSON.parse(fs.readFileSync(legacyPath, 'utf8'));
+        if (data[key]) {
+          return {
+            key: data[key].key,
+            name: data[key].name,
+            baseStats: data[key].base,
+            growthStats: data[key].growth,
+            passive: data[key].passive,
+            pros: data[key].pros,
+            cons: data[key].cons
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load legacy species data');
+    }
+    throw new Error(`Unknown species key: ${key}`);
+  }
+
+  // Return species in legacy format for backward compatibility
+  return {
+    key: species.key,
+    name: species.name,
+    baseStats: species.baseStats,
+    growthStats: species.growthStats,
+    passive: species.passive || species.diet,
+    pros: species.type || 'Balanced',
+    cons: 'Evolves over time'
+  };
 }
 
 export function getStats(animalKey, level) {
-  const a = getAnimal(animalKey);
+  const species = speciesModules[animalKey];
+  if (!species) {
+    throw new Error(`Unknown species key: ${animalKey}`);
+  }
+
   const L = Math.max(1, Math.floor(level));
-
-  // Cache stats by key+level to avoid recalculation
-  const cacheKey = `${animalKey}:${L}`;
-  if (statsCache.has(cacheKey)) {
-    return statsCache.get(cacheKey);
-  }
-
   const n = L - 1;
-  const stats = {
-    hp: a.base.hp + a.growth.hp * n,
-    atk: a.base.atk + a.growth.atk * n,
-    def: a.base.def + a.growth.def * n,
-    spd: a.base.spd + a.growth.spd * n,
+
+  return {
+    hp: species.baseStats.hp + species.growthStats.hp * n,
+    atk: species.baseStats.atk + species.growthStats.atk * n,
+    def: species.baseStats.def + species.growthStats.def * n,
+    spd: species.baseStats.spd + species.growthStats.spd * n,
   };
-
-  // Memory optimization: limit cache size
-  if (statsCache.size >= CACHE_MAX_SIZE) {
-    const firstKey = statsCache.keys().next().value;
-    statsCache.delete(firstKey);
-  }
-
-  statsCache.set(cacheKey, { ...stats, timestamp: Date.now() });
-  return stats;
 }
 
-// Periodic cache cleanup for memory optimization
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, value] of statsCache.entries()) {
-    if (now - value.timestamp > CACHE_TTL) {
-      statsCache.delete(key);
-    }
-  }
-}, 60000); // Clean every minute
+export function getSpeciesModule(key) {
+  return speciesModules[key];
+}
+
+export function getAllSpeciesModules() {
+  return speciesModules;
+}
+
+// Export specific species for direct access
+export { foxSpecies } from './fox.js';

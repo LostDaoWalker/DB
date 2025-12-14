@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { THEME } from '../../../constants/theme.js';
-import { createPlayer, getPlayer } from '../../db/index.js';
+import { createPlayer, getPlayer } from '../../../db/index.js';
 import { getAnimal } from '../../game/species/index.js';
 import { logPlayerRegistration } from '../../utils/playerActivityLogger.js';
 

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { THEME, primalLine } from '../../constants/theme.js';
-import { getPlayer } from '../../db/index.js';
+import { getPlayer } from '../../../db/index.js';
 
 export const cooldownCommand = {
   data: new SlashCommandBuilder().setName('cooldown').setDescription('Check your battle cooldown.'),
