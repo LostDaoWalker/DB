@@ -349,6 +349,10 @@ export const currentSchema = schemaManager.defineSchema('animal_rpg', 1, (schema
     .addColumn('last_played_at', ColumnType.DATETIME, {
       default: 0,
       comment: 'Last activity timestamp'
+    })
+    .addColumn('last_animal_change', ColumnType.DATETIME, {
+      default: 0,
+      comment: 'Last time animal was changed (for rate limiting)'
     });
 
   // Add indexes for performance

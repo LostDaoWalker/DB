@@ -60,7 +60,7 @@ export function getDb() {
 
 export function getPlayer(userId) {
   return new Promise((resolve, reject) => {
-    db.get('SELECT user_id, animal_key, xp, last_battle_at, created_at FROM players WHERE user_id = ?', [userId], (err, row) => {
+    db.get('SELECT user_id, animal_key, xp, last_battle_at, created_at, last_animal_change FROM players WHERE user_id = ?', [userId], (err, row) => {
       if (err) {
         logger.error({ err, userId }, 'Database error in getPlayer');
         return reject(err);
@@ -165,6 +165,18 @@ export function getPlayerStats(userId) {
         return reject(err);
       }
       resolve(row || null);
+    });
+  });
+}
+
+export function updatePlayerAnimal(userId, animalKey, now) {
+  return new Promise((resolve, reject) => {
+    db.run('UPDATE players SET animal_key = ?, last_animal_change = ? WHERE user_id = ?', [animalKey, now, userId], function(err) {
+      if (err) {
+        logger.error({ err, userId, animalKey }, 'Database error in updatePlayerAnimal');
+        return reject(err);
+      }
+      resolve();
     });
   });
 }
