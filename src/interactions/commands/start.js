@@ -40,6 +40,12 @@ export const startCommand = {
                   value: 'change_animal',
                   description: 'Switch to a different animal (keeps progress)',
                   emoji: '🔄'
+                },
+                {
+                  label: 'Evolution',
+                  value: 'evolution',
+                  description: 'Evolve your animal using Evolution Points',
+                  emoji: '✨'
                 }
               ])
           )]

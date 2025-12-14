@@ -353,6 +353,15 @@ export const currentSchema = schemaManager.defineSchema('animal_rpg', 1, (schema
     .addColumn('last_animal_change', ColumnType.DATETIME, {
       default: 0,
       comment: 'Last time animal was changed (for rate limiting)'
+    })
+    .addColumn('evolution_points', ColumnType.INTEGER, {
+      notNull: true,
+      default: 0,
+      comment: 'Evolution Points earned from leveling up'
+    })
+    .addColumn('evolved_animal_key', ColumnType.TEXT, {
+      default: null,
+      comment: 'Key of evolved animal (if any)'
     });
 
   // Add indexes for performance

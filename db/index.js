@@ -61,7 +61,7 @@ export function getDb() {
 export function getPlayer(userId) {
   return safeDbOperation(() => {
     return new Promise((resolve, reject) => {
-      db.get('SELECT user_id, animal_key, xp, last_battle_at, created_at, last_animal_change FROM players WHERE user_id = ?', [userId], (err, row) => {
+      db.get('SELECT user_id, animal_key, xp, last_battle_at, created_at, last_animal_change, evolution_points, evolved_animal_key FROM players WHERE user_id = ?', [userId], (err, row) => {
         if (err) {
           logger.error({ err, userId }, 'Database error in getPlayer');
           return reject(err);
@@ -306,4 +306,55 @@ export async function ensurePlayerExists(userId) {
 
     return await getPlayer(userId);
   }, 'Player existence check');
+}
+
+export function grantEvolutionPoints(userId, points) {
+  return safeDbOperation(() => {
+    return new Promise((resolve, reject) => {
+      db.run('UPDATE players SET evolution_points = evolution_points + ? WHERE user_id = ?', [points, userId], function(err) {
+        if (err) {
+          logger.error({ err, userId, points }, 'Database error in grantEvolutionPoints');
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }, 'Evolution points grant');
+}
+
+export function spendEvolutionPoints(userId, points) {
+  return safeDbOperation(() => {
+    return new Promise((resolve, reject) => {
+      db.run('UPDATE players SET evolution_points = evolution_points - ? WHERE user_id = ? AND evolution_points >= ?', [points, userId, points], function(err) {
+        if (err) {
+          logger.error({ err, userId, points }, 'Database error in spendEvolutionPoints');
+          return reject(err);
+        }
+        if (this.changes === 0) {
+          return reject(new Error('Insufficient evolution points'));
+        }
+        resolve();
+      });
+    });
+  }, 'Evolution points spend');
+}
+
+export function evolvePlayerAnimal(userId, evolvedAnimalKey, epCost) {
+  return safeDbOperation(async () => {
+    // First spend the EP
+    await spendEvolutionPoints(userId, epCost);
+
+    // Then update the animal
+    await new Promise((resolve, reject) => {
+      db.run('UPDATE players SET evolved_animal_key = ? WHERE user_id = ?', [evolvedAnimalKey, userId], function(err) {
+        if (err) {
+          logger.error({ err, userId, evolvedAnimalKey }, 'Database error in evolvePlayerAnimal');
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+
+    return await getPlayer(userId);
+  }, 'Player animal evolution');
 }

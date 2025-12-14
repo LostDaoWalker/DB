@@ -1,13 +1,13 @@
 import { randomInt } from 'node:crypto';
 import { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { THEME, primalLine } from '../../constants/theme.js';
-import { getPlayer, updatePlayerXpAndBattleTime } from '../../db/index.js';
+import { THEME, primalLine } from '../../../constants/theme.js';
+import { getPlayer, updatePlayerXpAndBattleTime, grantEvolutionPoints } from '../../../db/index.js';
 import { levelFromXp, applyXp, xpForNext } from '../../game/leveling.js';
 import { listAnimals } from '../../game/species/index.js';
 import { simulateBattle } from '../../game/battle/engine.js';
 import { renderBattleCard } from '../../ui/renderBattleCard.js';
 import { logBattleResult, logLevelUp } from '../../utils/playerActivityLogger.js';
-import { updatePlayerBattleStats } from '../../db/index.js';
+import { updatePlayerBattleStats } from '../../../db/index.js';
 import { logger } from '../../logger.js';
 
 function pickEnemyAnimal(playerAnimalKey) {
@@ -52,6 +52,11 @@ export const battleCommand = {
     const { level: oldLevel } = levelFromXp(p.xp);
     updatePlayerXpAndBattleTime({ userId: p.user_id, xp: next.totalXp, lastBattleAt: now });
 
+    // Grant EP if player leveled up
+    if (next.epGained > 0) {
+      await grantEvolutionPoints(interaction.user.id, next.epGained);
+    }
+
     // Update battle statistics
     await updatePlayerBattleStats({ userId: interaction.user.id, won: win, now });
 
@@ -85,11 +90,17 @@ export const battleCommand = {
     const nextReq = xpForNext(next.level);
     const leveledUp = next.level > result.player.level;
 
+    let description = `${leveledUp ? 'LEVEL UP ' : ''}+${xpGain} XP\nLevel ${next.level} • ${next.xpIntoLevel}/${nextReq} XP`;
+
+    if (next.epGained > 0) {
+      description += `\n✨ +${next.epGained} Evolution Points!`;
+    }
+
     await interaction.editReply({
       embeds: [new EmbedBuilder()
         .setColor(win ? THEME.ok : THEME.danger)
         .setTitle(title)
-        .setDescription(`${leveledUp ? 'LEVEL UP ' : ''}+${xpGain} XP\nLevel ${next.level} • ${next.xpIntoLevel}/${nextReq} XP`)
+        .setDescription(description)
         .addFields(
           { name: result.player.name, value: `Level ${result.player.level}${leveledUp ? ' → ' + next.level : ''}`, inline: true },
           { name: result.enemy.name, value: `Level ${result.enemy.level}`, inline: true }

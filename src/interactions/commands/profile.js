@@ -27,15 +27,28 @@ export const profileCommand = {
       animal = getAnimal(p.animal_key);
       stats = getStats(p.animal_key, level);
 
+      // Determine display animal (evolved or base)
+      const displayAnimalKey = p.evolved_animal_key || p.animal_key;
+      const displayAnimal = getAnimal(displayAnimalKey);
+      const displayStats = getStats(displayAnimalKey, level);
+
       await interaction.reply({
         embeds: [new EmbedBuilder()
           .setColor(THEME.color)
-          .setTitle(`${getAnimalEmoji(p.animal_key)} ${animal.name}`)
-          .setDescription(`Level ${level}\n${xpIntoLevel}/${next} XP\n\n${animal.passive}`)
-          .addFields({
-            name: 'Stats',
-            value: `${stats.hp} HP • ${stats.atk} ATK • ${stats.def} DEF • ${stats.spd} SPD`
-          })
+          .setTitle(`${getAnimalEmoji(displayAnimalKey)} ${displayAnimal.name}${p.evolved_animal_key ? ' (Evolved)' : ''}`)
+          .setDescription(`Level ${level}\n${xpIntoLevel}/${next} XP\n\n${displayAnimal.passive}`)
+          .addFields(
+            {
+              name: 'Stats',
+              value: `${displayStats.hp} HP • ${displayStats.atk} ATK • ${displayStats.def} DEF • ${displayStats.spd} SPD`,
+              inline: true
+            },
+            {
+              name: 'Evolution Points',
+              value: `${p.evolution_points} EP`,
+              inline: true
+            }
+          )
         ]
       });
     } catch (err) {

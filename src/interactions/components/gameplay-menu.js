@@ -25,6 +25,12 @@ export const gameplayMenuHandler = {
       case 'change_animal':
         await handleAnimalChange(interaction);
         break;
+
+      case 'evolution':
+        // Trigger evolution command
+        const evolutionCommand = (await import('../../../interactions/commands/evolution.js')).evolutionCommand;
+        await evolutionCommand.execute(interaction);
+        break;
     }
   },
 };
