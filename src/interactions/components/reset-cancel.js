@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { THEME } from '../../../constants/theme.js';
+import { THEME } from '../../constants/theme.js';
 
 export const resetCancelHandler = {
   name: 'reset_cancel',

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { THEME } from '../../constants/theme.js';
+import { THEME } from '../constants/theme.js';
 import { getPlayer } from '../../db/index.js';
 
 export const resetCommand = {
