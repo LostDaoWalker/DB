@@ -1,0 +1,25 @@
+{
+  "name": "animal-rpg-bot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cozy animal-themed RPG autobattler Discord bot",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "register:commands": "node scripts/register-commands.js"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.76",
+    "better-sqlite3": "^11.7.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "pino": "^9.4.0"
+  },
+  "devDependencies": {
+    "pino-pretty": "^11.3.0"
+  }
+}
