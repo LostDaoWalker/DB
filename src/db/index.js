@@ -4,81 +4,52 @@ import sqlite3 from 'sqlite3';
 import { getEnv } from '../config/env.js';
 import { logger } from '../logger.js';
 import { setupAutomaticBackups } from './backup.js';
+import { SchemaExecutor } from './schema-executor.js';
 
 let db;
+let schemaExecutor;
 
 export function initDb() {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (db) return resolve(db);
 
-    const env = getEnv();
-    const dbPath = env.DATABASE_PATH;
-    const dbDir = path.dirname(dbPath);
+    try {
+      const env = getEnv();
+      const dbPath = env.DATABASE_PATH;
+      const dbDir = path.dirname(dbPath);
 
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir, { recursive: true });
-    }
-
-    db = new sqlite3.Database(dbPath, (err) => {
-      if (err) {
-        logger.error({ err, path: dbPath }, 'Failed to open database');
-        return reject(err);
+      if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
       }
 
-      logger.info({ path: dbPath }, 'Database initialized');
-
-      // Configure SQLite pragmas
-      db.run('PRAGMA journal_mode = WAL');
-      db.run('PRAGMA synchronous = NORMAL');
-      db.run('PRAGMA temp_store = MEMORY');
-      db.run('PRAGMA cache_size = 5000');
-      db.run('PRAGMA foreign_keys = ON');
-
-      // Create tables with data safety features
-      db.run(`
-        CREATE TABLE IF NOT EXISTS players (
-          user_id TEXT PRIMARY KEY,
-          animal_key TEXT NOT NULL,
-          xp INTEGER NOT NULL DEFAULT 0 CHECK(xp >= 0),
-          last_battle_at INTEGER NOT NULL DEFAULT 0,
-          created_at INTEGER NOT NULL,
-          registered_at INTEGER NOT NULL DEFAULT 0,
-          last_command_used TEXT DEFAULT '',
-          last_command_at INTEGER DEFAULT 0,
-          commands_used INTEGER DEFAULT 0,
-          total_battles INTEGER DEFAULT 0,
-          total_wins INTEGER DEFAULT 0,
-          total_losses INTEGER DEFAULT 0,
-          current_streak INTEGER DEFAULT 0,
-          best_streak INTEGER DEFAULT 0,
-          last_played_at INTEGER DEFAULT 0
-        )
-      `, (err) => {
+      db = new sqlite3.Database(dbPath, async (err) => {
         if (err) {
-          logger.error({ err }, 'Failed to create players table');
+          logger.error({ err, path: dbPath }, 'Failed to open database');
           return reject(err);
         }
 
-        // Create indexes
-        db.run('CREATE INDEX IF NOT EXISTS idx_players_animal ON players(animal_key)', (err) => {
-          if (err) {
-            logger.error({ err }, 'Failed to create animal index');
-            return reject(err);
-          }
+        logger.info({ path: dbPath }, 'Database connection established');
 
-          db.run('CREATE INDEX IF NOT EXISTS idx_players_registered ON players(registered_at)', (err) => {
-            if (err) {
-              logger.error({ err }, 'Failed to create registration index');
-              return reject(err);
-            }
+        try {
+          // Initialize schema executor and apply schema
+          schemaExecutor = new SchemaExecutor(db);
+          await schemaExecutor.initialize();
 
-            // Setup automatic hourly backups
-            setupAutomaticBackups(dbPath);
-            resolve(db);
-          });
-        });
+          // Setup automatic hourly backups
+          setupAutomaticBackups(dbPath);
+
+          logger.info({ path: dbPath }, 'Database fully initialized with dynamic schema');
+          resolve(db);
+
+        } catch (schemaErr) {
+          logger.error({ err: schemaErr }, 'Failed to initialize database schema');
+          reject(schemaErr);
+        }
       });
-    });
+    } catch (err) {
+      logger.error({ err }, 'Failed to initialize database');
+      reject(err);
+    }
   });
 }
 
@@ -198,6 +169,19 @@ export function getPlayerStats(userId) {
   });
 }
 
+export function deletePlayer(userId) {
+  return new Promise((resolve, reject) => {
+    db.run('DELETE FROM players WHERE user_id = ?', [userId], function(err) {
+      if (err) {
+        logger.error({ err, userId }, 'Database error in deletePlayer');
+        return reject(err);
+      }
+      logger.info({ userId, changes: this.changes }, 'Player data deleted');
+      resolve(this.changes > 0);
+    });
+  });
+}
+
 export function logBotEvent(eventType, details = {}) {
   const eventData = {
     event_type: eventType,
@@ -206,32 +190,18 @@ export function logBotEvent(eventType, details = {}) {
   };
 
   return new Promise((resolve, reject) => {
-    // Create bot_events table if it doesn't exist
-    db.run(`
-      CREATE TABLE IF NOT EXISTS bot_events (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        event_type TEXT NOT NULL,
-        timestamp INTEGER NOT NULL,
-        details TEXT
-      )
-    `, (err) => {
-      if (err) {
-        logger.error({ err }, 'Failed to create bot_events table');
-        return reject(err);
-      }
-
-      db.run(
-        'INSERT INTO bot_events (event_type, timestamp, details) VALUES (?, ?, ?)',
-        [eventData.event_type, eventData.timestamp, eventData.details],
-        function(err) {
-          if (err) {
-            logger.error({ err, eventType }, 'Failed to log bot event');
-            return reject(err);
-          }
-          logger.info({ eventType, eventId: this.lastID }, 'Bot event logged');
-          resolve(this.lastID);
+    // bot_events table is now managed by the schema system
+    db.run(
+      'INSERT INTO bot_events (event_type, timestamp, details) VALUES (?, ?, ?)',
+      [eventData.event_type, eventData.timestamp, eventData.details],
+      function(err) {
+        if (err) {
+          logger.error({ err, eventType }, 'Failed to log bot event');
+          return reject(err);
         }
-      );
-    });
+        logger.info({ eventType, eventId: this.lastID }, 'Bot event logged');
+        resolve(this.lastID);
+      }
+    );
   });
 }

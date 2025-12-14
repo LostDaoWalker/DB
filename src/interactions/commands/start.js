@@ -9,7 +9,7 @@ export const startCommand = {
   async execute(interaction) {
     try {
       const existing = getPlayer(interaction.user.id);
-      if (existing) {
+      if (existing && existing.animal_key) {
         await interaction.reply('Already playing. Use `/battle` or `/profile`.');
         return;
       }

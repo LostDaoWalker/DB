@@ -16,7 +16,8 @@ export const profileCommand = {
 
     // Validate animal key exists and is valid
     if (!p.animal_key) {
-      throw new Error('Player has no animal assigned - please use /start to choose an animal');
+      await interaction.reply('No animal chosen. Use `/start` to select your animal first.');
+      return;
     }
 
     let animal, stats;
