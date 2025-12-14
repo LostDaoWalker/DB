@@ -45,24 +45,24 @@ export function epRewardForLevel(level) {
   return baseEP + levelBonus;
 }
 
-// Get total EP cost for evolving to a specific animal - HIGHLY BUFFED COSTS
+// Get total EP cost for evolving to a specific animal - PROPER TIERED COSTS
 export function epCostForEvolution(evolvedAnimalKey) {
   const evolutionCosts = {
-    // Mythical animals - INSANELY expensive
-    'dragon': 2000,
-    'phoenix': 1800,
-    'unicorn': 1600,
-    'griffin': 1400,
-    'leviathan': 1200,
+    // Mythical animals (supernatural creatures - most expensive)
+    'dragon': 1500,
+    'phoenix': 1400,
+    'unicorn': 1300,
+    'griffin': 1200,
+    'leviathan': 1100,
 
-    // Ancient animals - EXTREMELY expensive
-    't_rex': 1000,
-    'mammoth': 800,
-    'saber_tooth': 720,
-    'triceratops': 640,
-    'stegosaurus': 600,
+    // Ancient animals (prehistoric creatures - mid-tier)
+    't_rex': 600,
+    'mammoth': 500,
+    'saber_tooth': 450,
+    'triceratops': 400,
+    'stegosaurus': 380,
 
-    // Legendary animals - still very expensive
+    // Legendary animals (enhanced real animals - entry-tier)
     'wolf': 200,
     'bear': 320,
     'eagle': 280,
